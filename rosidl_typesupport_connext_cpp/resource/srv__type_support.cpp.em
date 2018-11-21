@@ -39,7 +39,14 @@
 #include "rosidl_typesupport_connext_cpp/service_type_support.h"
 #include "rosidl_typesupport_connext_cpp/service_type_support_decl.hpp"
 
-#include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name))__struct.hpp"
+@{
+header_filename = get_header_filename_from_msg_name(spec.srv_name)
+if header_filename.endswith('__request'):
+    header_filename = header_filename[:-9]
+elif header_filename.endswith('__response'):
+    header_filename = header_filename[:-10]
+}@
+#include "@(spec.pkg_name)/@(subfolder)/@(header_filename)__struct.hpp"
 #include "@(spec.pkg_name)/@(subfolder)/dds_connext/@(spec.srv_name)_Request_Support.h"
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Request'))__rosidl_typesupport_connext_cpp.hpp"
 #include "@(spec.pkg_name)/@(subfolder)/dds_connext/@(spec.srv_name)_Response_Support.h"

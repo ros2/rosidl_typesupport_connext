@@ -32,9 +32,15 @@
 #include "rosidl_typesupport_connext_cpp/message_type_support.h"
 
 #include "@(pkg)/msg/rosidl_typesupport_connext_c__visibility_control.h"
-@{header_file_name = get_header_filename_from_msg_name(type)}@
-#include "@(pkg)/@(subfolder)/@(header_file_name)__struct.h"
-#include "@(pkg)/@(subfolder)/@(header_file_name)__functions.h"
+@{
+header_filename = get_header_filename_from_msg_name(spec.base_type.type)
+if header_filename.endswith('__request'):
+    header_filename = header_filename[:-9]
+elif header_filename.endswith('__response'):
+    header_filename = header_filename[:-10]
+}@
+#include "@(pkg)/@(subfolder)/@(header_filename)__struct.h"
+#include "@(pkg)/@(subfolder)/@(header_filename)__functions.h"
 
 #ifndef _WIN32
 # pragma GCC diagnostic push
@@ -71,6 +77,10 @@ for field in spec.fields:
             keys.add('rosidl_generator_c/string_functions.h')
     else:
         header_file_name = get_header_filename_from_msg_name(field.type.type)
+        if header_file_name.endswith('__request'):
+            header_file_name = header_file_name[:-9]
+        elif header_file_name.endswith('__response'):
+            header_file_name = header_file_name[:-10]
         keys.add('%s/msg/%s__functions.h' % (field.type.pkg_name, header_file_name))
     for key in keys:
         if key not in includes:
@@ -253,8 +263,11 @@ if field.type.type == 'string':
     array_init = 'rosidl_generator_c__String__Sequence__init'
     array_fini = 'rosidl_generator_c__String__Sequence__fini'
 elif field.type.is_primitive_type():
-    array_init = 'rosidl_generator_c__{field.type.type}__Sequence__init'.format(**locals())
-    array_fini = 'rosidl_generator_c__{field.type.type}__Sequence__fini'.format(**locals())
+    type_ = field.type.type
+    if type_ == 'char':
+        type_ = 'uint8'
+    array_init = 'rosidl_generator_c__{type_}__Sequence__init'.format(**locals())
+    array_fini = 'rosidl_generator_c__{type_}__Sequence__fini'.format(**locals())
 else:
     array_init = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__init'.format(**locals())
     array_fini = '{field.type.pkg_name}__msg__{field.type.type}__Sequence__fini'.format(**locals())

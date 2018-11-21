@@ -45,10 +45,8 @@
 #include "rosidl_typesupport_connext_c/identifier.h"
 
 #include "@(spec.pkg_name)/msg/rosidl_typesupport_connext_c__visibility_control.h"
-@{req_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__request')}@
-@{res_header_file_name = get_header_filename_from_msg_name(spec.srv_name + '__response')}@
-#include "@(spec.pkg_name)/@(subfolder)/@(req_header_file_name).h"
-#include "@(spec.pkg_name)/@(subfolder)/@(res_header_file_name).h"
+@{header_file_name = get_header_filename_from_msg_name(spec.srv_name)}@
+#include "@(spec.pkg_name)/@(subfolder)/@(header_file_name).h"
 
 #include "@(spec.pkg_name)/@(subfolder)/dds_connext/@(spec.srv_name)_Request_Support.h"
 #include "@(spec.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.srv_name + '_Request'))__rosidl_typesupport_connext_c.h"
