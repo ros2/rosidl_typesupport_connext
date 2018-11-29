@@ -17,27 +17,16 @@ import subprocess
 import sys
 
 from rosidl_cmake import generate_files
+from convert_to_connext_idl import convert_to_connext_idl
 
 
 def generate_dds_connext_cpp(pkg_name, dds_interface_files,
-                             dds_interface_base_path, deps,
+                             dds_interface_base_path,
                              output_basepath, idl_pp):
-
     include_dirs = [dds_interface_base_path]
-    for dep in deps:
-        # Only take the first : for separation, as Windows follows with a C:\
-        dep_parts = dep.split(':', 1)
-        assert len(dep_parts) == 2, "The dependency '%s' must contain a double colon" % dep
-        idl_path = dep_parts[1]
-        idl_base_path = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.normpath(idl_path))))
-        if idl_base_path not in include_dirs:
-            include_dirs.append(idl_base_path)
-
     for index, idl_file in enumerate(dds_interface_files):
         assert os.path.exists(idl_file), 'Could not find IDL file: ' + idl_file
-
-        # get two level of parent folders for idl file
+        # Get two level of parent folders for idl file
         folder = os.path.dirname(idl_file)
         parent_folder = os.path.dirname(folder)
         output_path = os.path.join(
@@ -49,6 +38,9 @@ def generate_dds_connext_cpp(pkg_name, dds_interface_files,
         except FileExistsError:
             pass
 
+        # Convert IDL file to a form that's compatible with what RTI Connext expects.
+        converted_idl_file = convert_to_connext_idl(idl_file, dds_interface_base_path)
+
         cmd = [idl_pp]
         for include_dir in include_dirs:
             cmd += ['-I', include_dir]
@@ -58,7 +50,7 @@ def generate_dds_connext_cpp(pkg_name, dds_interface_files,
             '-namespace',
             '-update', 'typefiles',
             '-unboundedSupport',
-            idl_file
+            converted_idl_file
         ]
         if os.name == 'nt':
             cmd[-5:-5] = ['-dllExportMacroSuffix', pkg_name]

@@ -40,7 +40,6 @@ def main(argv=sys.argv[1:]):
         generator_args['package_name'],
         generator_args.get('additional_files', []),
         args.idl_base_path,
-        generator_args.get('ros_interface_dependencies', []),
         generator_args['output_dir'],
         args.idl_pp
     )

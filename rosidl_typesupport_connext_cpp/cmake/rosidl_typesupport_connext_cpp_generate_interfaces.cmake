@@ -13,7 +13,7 @@
 # limitations under the License.
 
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_cpp/${PROJECT_NAME}")
-set(_connext_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_idl/${PROJECT_NAME}")
+set(_connext_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_idl")
 
 set(_dds_idl_files "")
 set(_generated_files "")
