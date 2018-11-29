@@ -2,6 +2,14 @@
 
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
+from rosidl_parser.definition import Array
+from rosidl_parser.definition import BoundedSequence
+from rosidl_parser.definition import BasicType
+from rosidl_parser.definition import NamespacedType
+from rosidl_parser.definition import NestedType
+from rosidl_parser.definition import Sequence
+from rosidl_parser.definition import String
+from rosidl_parser.definition import WString
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
 message_name = convert_camel_case_to_lower_case_underscore(message.structure.type.name)
