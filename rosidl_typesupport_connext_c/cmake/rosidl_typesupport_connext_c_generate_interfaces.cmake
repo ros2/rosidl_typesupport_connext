@@ -20,18 +20,18 @@ set(_generated_files "")
 set(_generated_external_files "")
 foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
   # Get second part of tuple which has form "msg/Name.idl" or "srv/Name.idl" or "action/Name.idl"
-  string(REGEX REPLACE ":([^:]*)$" "/\\1" _rel_idl_file "${_idl_tuple}")
-  get_filename_component(_parent_folder "${_rel_idl_file}" DIRECTORY)
+  string(REGEX REPLACE ":([^:]*)$" "/\\1" _abs_idl_file "${_idl_tuple}")
+  get_filename_component(_parent_folder "${_abs_idl_file}" DIRECTORY)
   get_filename_component(_parent_folder "${_parent_folder}" NAME)
-  get_filename_component(_idl_name "${_idl_file}" NAME_WE)
+  get_filename_component(_idl_name "${_abs_idl_file}" NAME_WE)
   # Turn idl name into file names
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.h")
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.cxx")
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.h")
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.cxx")
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.h")
-  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.cxx")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.h")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.cxx")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.h")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.cxx")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.h")
+  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.cxx")
   list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_connext/${_header_name}__type_support.c")
   list(APPEND _generated_files "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_connext_c.h")
   list(APPEND _dds_idl_files "${_abs_idl_file}")
@@ -72,6 +72,7 @@ foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
     normalize_path(_abs_idl_file "${_abs_idl_file}")
     list(APPEND _dependency_files "${_abs_idl_file}")
     list(APPEND _dependencies "${_pkg_name}:${_abs_idl_file}")
+  endforeach()
 endforeach()
 
 set(target_dependencies
@@ -106,7 +107,7 @@ add_custom_command(
   --generator-arguments-file "${generator_arguments_file}"
   DEPENDS
     ${target_dependencies}
-    ${generated_external_files}
+    ${_generated_external_files}
     ${_dds_idl_files}
   COMMENT "Generating C type support for RTI Connext"
   VERBATIM
@@ -209,10 +210,6 @@ add_dependencies(
 add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
-)
-add_dependencies(
-  ${rosidl_generate_interfaces_TARGET}${_target_suffix}
-  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)

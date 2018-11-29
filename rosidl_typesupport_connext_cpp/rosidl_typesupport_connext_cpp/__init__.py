@@ -17,29 +17,29 @@ import subprocess
 import sys
 
 from rosidl_cmake import generate_files
-from convert_to_connext_idl import convert_to_connext_idl
+from .convert_to_connext_idl import convert_to_connext_idl
 
 
 def generate_dds_connext_cpp(pkg_name, dds_interface_files,
                              dds_interface_base_path,
                              output_basepath, idl_pp):
-    include_dirs = [dds_interface_base_path]
-    for index, idl_file in enumerate(dds_interface_files):
+    converted_dds_interface_files = []
+    for idl_file in dds_interface_files:
         assert os.path.exists(idl_file), 'Could not find IDL file: ' + idl_file
-        # Get two level of parent folders for idl file
-        folder = os.path.dirname(idl_file)
-        parent_folder = os.path.dirname(folder)
+        converted_dds_interface_files.append(
+            convert_to_connext_idl(idl_file, dds_interface_base_path)
+        )
+
+    include_dirs = [dds_interface_base_path]
+    for idl_file in converted_dds_interface_files:
+        idl_file_folder = os.path.basename(os.path.dirname(idl_file))
         output_path = os.path.join(
-            output_basepath,
-            os.path.basename(parent_folder),
-            os.path.basename(folder))
+            output_basepath, idl_file_folder, 'dds_connext'
+        )
         try:
             os.makedirs(output_path)
         except FileExistsError:
             pass
-
-        # Convert IDL file to a form that's compatible with what RTI Connext expects.
-        converted_idl_file = convert_to_connext_idl(idl_file, dds_interface_base_path)
 
         cmd = [idl_pp]
         for include_dir in include_dirs:
@@ -50,7 +50,7 @@ def generate_dds_connext_cpp(pkg_name, dds_interface_files,
             '-namespace',
             '-update', 'typefiles',
             '-unboundedSupport',
-            converted_idl_file
+            idl_file
         ]
         if os.name == 'nt':
             cmd[-5:-5] = ['-dllExportMacroSuffix', pkg_name]
@@ -58,6 +58,7 @@ def generate_dds_connext_cpp(pkg_name, dds_interface_files,
         msg_name = os.path.splitext(os.path.basename(idl_file))[0]
         count = 1
         max_count = 5
+        print(' '.join(cmd))
         while True:
             subprocess.check_call(cmd)
 
@@ -113,7 +114,7 @@ def generate_cpp(arguments_file):
         'idl__rosidl_typesupport_connext_cpp.hpp.em':
         '%s__rosidl_typesupport_connext_cpp.hpp',
         'idl__dds_connext__type_support.cpp.em':
-        '%s__type_support.cpp'
+        'dds_connext/%s__type_support.cpp'
     }
     generate_files(arguments_file, mapping)
     return 0

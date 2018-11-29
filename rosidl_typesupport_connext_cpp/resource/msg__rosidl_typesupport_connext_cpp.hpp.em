@@ -8,7 +8,7 @@ header_filename = convert_camel_case_to_lower_case_underscore(interface_path.ste
 header_files = [
     'rosidl_generator_c/message_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
-    package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h'
+    package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h',
     include_base + '/' + header_filename + '__struct.hpp'
 ]
 dds_specific_header_files = [
@@ -65,14 +65,14 @@ class DDSDomainParticipant;
 class DDSDataWriter;
 class DDSDataReader;
 
-@[for ns in message.structure.namespaces]@
+@[for ns in message.structure.type.namespaces]@
 
 namespace @(ns)
 {
 @[end for]@
 
 @{
-__ros_msg_pkg_prefix = '::'.join(message.structure.namespaces)
+__ros_msg_pkg_prefix = '::'.join(message.structure.type.namespaces)
 __ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.type.name
 __dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.type.name
 __dds_msg_type = __dds_msg_type_prefix + '_'
@@ -108,7 +108,7 @@ to_message__@(message.structure.type.name)(
 
 }  // namespace typesupport_connext_cpp
 
-@[for ns in reversed(message.structure.namespaces)]@
+@[for ns in reversed(message.structure.type.namespaces)]@
 }  // namespace @(ns)
 
 @[end for]@

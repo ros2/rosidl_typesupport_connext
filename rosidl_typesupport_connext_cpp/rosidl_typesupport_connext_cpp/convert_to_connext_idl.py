@@ -15,7 +15,7 @@ import os
 import re
 
 
-def convert_to_opensplice_idl(input_idl_file_path, output_basepath):
+def convert_to_connext_idl(input_idl_file_path, output_basepath):
     """
     Convert a generic IDL file to a new IDL file compatible with RTI Connext.
     The new IDL file is created with the same base name as the input file.
@@ -29,8 +29,14 @@ def convert_to_opensplice_idl(input_idl_file_path, output_basepath):
     output_idl_file_path = os.path.join(
         output_basepath,
         os.path.basename(parent_folder),
-        os.path.basename(folder)
+        os.path.basename(folder),
+        os.path.basename(input_idl_file_path)
     )
+    try:
+        os.makedirs(os.path.dirname(output_idl_file_path))
+    except FileExistsError:
+        pass
+
     # Regexes for find and replace
     regex_substitutions = []
     # Replace unsupported types
