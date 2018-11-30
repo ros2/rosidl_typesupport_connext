@@ -4,7 +4,7 @@
 header_files = [
     'rosidl_generator_c/message_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
-    package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h'
+    package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h'
 ]
 }@
 

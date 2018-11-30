@@ -18,7 +18,7 @@ from rosidl_cmake import generate_files
 def generate_typesupport_connext_c(arguments_file):
     mapping = {
         'idl__rosidl_typesupport_connext_c.h.em':
-        '%__rosidl_typesupport_connext_c.h',
+        '%s__rosidl_typesupport_connext_c.h',
         'idl__dds_connext__type_support_c.cpp.em':
         'dds_connext/%s__type_support_c.cpp'
     }

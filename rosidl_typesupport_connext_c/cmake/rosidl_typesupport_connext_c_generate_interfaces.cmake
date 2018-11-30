@@ -14,6 +14,8 @@
 
 
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_c/${PROJECT_NAME}")
+set(_dds_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_cpp/${PROJECT_NAME}")
+set(_dds_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
 
 set(_dds_idl_files "")
 set(_generated_files "")
@@ -26,15 +28,15 @@ foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
   get_filename_component(_idl_name "${_abs_idl_file}" NAME_WE)
   # Turn idl name into file names
   string_camel_case_to_lower_case_underscore("${_idl_name}" _header_name)
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.h")
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.cxx")
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.h")
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.cxx")
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.h")
-  list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.cxx")
-  list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_connext/${_header_name}__type_support.c")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.h")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_.cxx")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.h")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Plugin.cxx")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.h")
+  list(APPEND _generated_external_files "${_dds_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.cxx")
+  list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_connext/${_header_name}__type_support_c.cpp")
   list(APPEND _generated_files "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_connext_c.h")
-  list(APPEND _dds_idl_files "${_abs_idl_file}")
+  list(APPEND _dds_idl_files "${_dds_idl_base_path}/${PROJECT_NAME}/${_parent_folder}/dds_connext/${_idl_name}_.idl")
 endforeach()
 
 # If not on Windows, disable some warnings with Connext's generated code
@@ -80,7 +82,9 @@ set(target_dependencies
   ${rosidl_typesupport_connext_c_GENERATOR_FILES}
   "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/idl__rosidl_typesupport_connext_c.h.em"
   "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/idl__dds_connext__type_support_c.cpp.em"
+  "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/msg__rosidl_typesupport_connext_c.h.em"
   "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/msg__type_support_c.cpp.em"
+  "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/srv__rosidl_typesupport_connext_c.h.em"
   "${rosidl_typesupport_connext_c_TEMPLATE_DIR}/srv__type_support_c.cpp.em"
   ${_dependency_files})
 foreach(dep ${target_dependencies})
@@ -210,6 +214,10 @@ add_dependencies(
 add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
+)
+add_dependencies(
+  ${rosidl_generate_interfaces_TARGET}${_target_suffix}
+  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
