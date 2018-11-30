@@ -13,7 +13,14 @@
 # limitations under the License.
 
 set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_cpp/${PROJECT_NAME}")
-set(_connext_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_idl")
+set(_dds_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
+
+rosidl_generate_dds_interfaces(
+  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
+  IDL_TUPLES ${rosidl_generate_interfaces_IDL_TUPLES}
+  DEPENDENCY_PACKAGE_NAMES ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES}
+  OUTPUT_SUBFOLDERS "dds_connext"
+)
 
 set(_dds_idl_files "")
 set(_generated_files "")
@@ -33,7 +40,7 @@ foreach(_idl_tuple ${rosidl_generate_interfaces_IDL_TUPLES})
   list(APPEND _generated_external_files "${_output_path}/${_parent_folder}/dds_connext/${_idl_name}_Support.cxx")
   list(APPEND _generated_files "${_output_path}/${_parent_folder}/${_header_name}__rosidl_typesupport_connext_cpp.hpp")
   list(APPEND _generated_files "${_output_path}/${_parent_folder}/dds_connext/${_header_name}__type_support.cpp")
-  list(APPEND _dds_idl_files "${_abs_idl_file}")
+  list(APPEND _dds_idl_files "${_dds_idl_base_path}/${PROJECT_NAME}/${_parent_folder}/dds_connext/${_idl_name}_.idl")
 endforeach()
 
 # If not on Windows, disable some warnings with Connext's generated code
@@ -112,7 +119,7 @@ add_custom_command(
   OUTPUT ${_generated_files} ${_generated_external_files}
   COMMAND ${PYTHON_EXECUTABLE} ${rosidl_typesupport_connext_cpp_BIN}
   --generator-arguments-file "${generator_arguments_file}"
-  --idl-base-path "${_connext_idl_base_path}"
+  --dds-interface-base-path "${_dds_idl_base_path}"
   --idl-pp "${_idl_pp}"
   DEPENDS ${target_dependencies} ${_dds_idl_files}
   COMMENT "Generating C++ type support for RTI Connext (using '${_idl_pp}')"
@@ -202,6 +209,10 @@ add_dependencies(
 add_dependencies(
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
   ${rosidl_generate_interfaces_TARGET}__cpp
+)
+add_dependencies(
+  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
+  ${rosidl_generate_interfaces_TARGET}${_target_suffix}
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)

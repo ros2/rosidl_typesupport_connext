@@ -17,25 +17,33 @@ import subprocess
 import sys
 
 from rosidl_cmake import generate_files
-from .convert_to_connext_idl import convert_to_connext_idl
 
 
-def generate_dds_connext_cpp(pkg_name, dds_interface_files,
-                             dds_interface_base_path,
-                             output_basepath, idl_pp):
-    converted_dds_interface_files = []
-    for idl_file in dds_interface_files:
-        assert os.path.exists(idl_file), 'Could not find IDL file: ' + idl_file
-        converted_dds_interface_files.append(
-            convert_to_connext_idl(idl_file, dds_interface_base_path)
-        )
+def generate_dds_connext_cpp(
+        pkg_name, dds_interface_files, dds_interface_base_path, deps,
+        output_basepath, idl_pp):
 
     include_dirs = [dds_interface_base_path]
-    for idl_file in converted_dds_interface_files:
-        idl_file_folder = os.path.basename(os.path.dirname(idl_file))
+    for dep in deps:
+        # Only take the first : for separation, as Windows follows with a C:\
+        dep_parts = dep.split(':', 1)
+        assert len(dep_parts) == 2, "The dependency '%s' must contain a double colon" % dep
+        idl_path = dep_parts[1]
+        idl_base_path = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.normpath(idl_path))))
+        if idl_base_path not in include_dirs:
+            include_dirs.append(idl_base_path)
+
+    for idl_file in dds_interface_files:
+        assert os.path.exists(idl_file), 'Could not find IDL file: ' + idl_file
+
+        # get two level of parent folders for idl file
+        folder = os.path.dirname(idl_file)
+        parent_folder = os.path.dirname(folder)
         output_path = os.path.join(
-            output_basepath, idl_file_folder, 'dds_connext'
-        )
+            output_basepath,
+            os.path.basename(parent_folder),
+            os.path.basename(folder))
         try:
             os.makedirs(output_path)
         except FileExistsError:
@@ -58,7 +66,6 @@ def generate_dds_connext_cpp(pkg_name, dds_interface_files,
         msg_name = os.path.splitext(os.path.basename(idl_file))[0]
         count = 1
         max_count = 5
-        print(' '.join(cmd))
         while True:
             subprocess.check_call(cmd)
 
