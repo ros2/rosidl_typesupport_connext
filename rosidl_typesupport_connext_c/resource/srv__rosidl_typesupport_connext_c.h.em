@@ -4,7 +4,7 @@
 header_files = [
     'rosidl_generator_c/service_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
-    package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h'
+    package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h'
 ]
 }@
 
@@ -28,7 +28,7 @@ const rosidl_service_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
     @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(service.structure_type.name))();
+    @(interface_path.stem))();
 
 #ifdef __cplusplus
 }

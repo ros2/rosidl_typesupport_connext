@@ -10,14 +10,15 @@ from rosidl_parser.definition import NamespacedType
 from rosidl_parser.definition import NestedType
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-message_name = convert_camel_case_to_lower_case_underscore(message.structure.type.name)
+
+lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
 
 system_header_files = [
     'limits', 'stdexcept'
 ]
 
 header_files = [
-    include_base + '/' + message_name + '__rosidl_typesupport_connext_cpp.hpp',
+    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
     'rcutils/types/uint8_array.h',
     'rosidl_typesupport_cpp/message_type_support.hpp',
     'rosidl_typesupport_connext_cpp/identifier.hpp',
@@ -48,23 +49,28 @@ header_files = [
 
 // forward declaration of message dependencies and their conversion functions
 @[for member in message.structure.members]@
-@[    if isinstance(member.type, NamespacedType)]@
-@[        for ns in member.type.namespaces]@
+@{
+type_ = member.type
+if isinstance(type_, NestedType):
+   type_ = type_.basetype
+}@
+@[    if isinstance(type_, NamespacedType)]@
+@[        for ns in type_.namespaces]@
 namespace @(ns)
 {
 @[        end for]@
 namespace dds_
 {
-class @(member.type.name)_;
+class @(type_.name)_;
 }  // namespace dds_
 
 namespace typesupport_connext_cpp
 {
 
 @{
-member_ros_msg_pkg_prefix = '::'.join(member.type.namespaces)
-member_ros_msg_type = member_ros_msg_pkg_prefix + '::' + member.type.name
-member_dds_msg_type = member_ros_msg_pkg_prefix + '::dds_::' + member.type.name + '_'
+member_ros_msg_pkg_prefix = '::'.join(type_.namespaces)
+member_ros_msg_type = member_ros_msg_pkg_prefix + '::' + type_.name
+member_dds_msg_type = member_ros_msg_pkg_prefix + '::dds_::' + type_.name + '_'
 }@
 
 bool convert_ros_message_to_dds(
@@ -74,7 +80,7 @@ bool convert_dds_message_to_ros(
   const @(member_dds_msg_type) &,
   @(member_ros_msg_type) &);
 }  // namespace typesupport_connext_cpp
-@[        for ns in reversed(member.type.namespaces)]@
+@[        for ns in reversed(type_.namespaces)]@
 }  // namespace @(ns)
 @[        end for]@
 @[    end if]@
@@ -262,12 +268,12 @@ to_cdr_stream__@(message.structure.type.name)(
 
   // call the serialize function for the first time to get the expected length of the message
   unsigned int expected_length;
-  if (@(message.structure.type.name)_Plugin_serialize_to_cdr_buffer(
+  if (@(__dds_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
       NULL,
       &expected_length,
       dds_message) != RTI_TRUE)
   {
-    fprintf(stderr, "failed to call @(message.structure.type.name)_Plugin_serialize_to_cdr_buffer()\n");
+    fprintf(stderr, "failed to call @(__dds_msg_type_prefix)_Plugin_serialize_to_cdr_buffer()\n");
     return false;
   }
   cdr_stream->buffer_length = expected_length;
@@ -281,7 +287,7 @@ to_cdr_stream__@(message.structure.type.name)(
   }
   // call the function again and fill the buffer this time
   unsigned int buffer_length_uint = static_cast<unsigned int>(cdr_stream->buffer_length);
-  if (@(message.structure.type.name)_Plugin_serialize_to_cdr_buffer(
+  if (@(__dds_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
       reinterpret_cast<char *>(cdr_stream->buffer),
       &buffer_length_uint,
       dds_message) != RTI_TRUE)
@@ -315,7 +321,7 @@ to_message__@(message.structure.type.name)(
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
-  if (@(message.structure.type.name)_Plugin_deserialize_from_cdr_buffer(
+  if (@(__dds_msg_type_prefix)_Plugin_deserialize_from_cdr_buffer(
       dds_message,
       reinterpret_cast<char *>(cdr_stream->buffer),
       static_cast<unsigned int>(cdr_stream->buffer_length)) != RTI_TRUE)
@@ -333,7 +339,7 @@ to_message__@(message.structure.type.name)(
   return success;
 }
 
-static message_type_support_callbacks_t callbacks = {
+static message_type_support_callbacks_t _@(message.structure.type.name)__callbacks = {
   "@(package_name)",
   "@(message.structure.type.name)",
   &get_type_code__@(message.structure.type.name),
@@ -343,9 +349,9 @@ static message_type_support_callbacks_t callbacks = {
   &to_message__@(message.structure.type.name)
 };
 
-static rosidl_message_type_support_t handle = {
+static rosidl_message_type_support_t _@(message.structure.type.name)__handle = {
   rosidl_typesupport_connext_cpp::typesupport_identifier,
-  &callbacks,
+  &_@(message.structure.type.name)__callbacks,
   get_message_typesupport_handle_function,
 };
 
@@ -364,7 +370,7 @@ ROSIDL_TYPESUPPORT_CONNEXT_CPP_EXPORT_@(package_name)
 const rosidl_message_type_support_t *
 get_message_type_support_handle<@(__ros_msg_type)>()
 {
-  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::handle;
+  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.type.name)__handle;
 }
 
 }  // namespace rosidl_typesupport_connext_cpp
@@ -379,7 +385,7 @@ ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_cpp,
     @(', '.join([package_name] + list(interface_path.parents[0].parts))),
     @(message.structure.type.name))() {
-  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::handle;
+  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.type.name)__handle;
 }
 
 #ifdef __cplusplus

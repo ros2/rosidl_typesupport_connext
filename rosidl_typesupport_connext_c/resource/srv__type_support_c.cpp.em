@@ -1,44 +1,22 @@
 @# Included from rosidl_typesupport_connext_c/resource/idl__dds_connext__type_support_c.cpp.em
-
-@{
-TEMPLATE(
-    'msg__type_support.c.em',
-    package_name=package_name, interface_path=interface_path, message=service.request_message,
-    include_directives=include_directives
-)
-}@
-
-@{
-TEMPLATE(
-    'msg__type_support.c.em',
-    package_name=package_name, interface_path=interface_path, message=service.response_message,
-    include_directives=include_directives
-)
-}@
-
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-service_name = convert_camel_case_to_lower_case_underscore(service.structure.type.name)
-request_message_name = convert_camel_case_to_lower_case_underscore(service.request_message.structure.type.name)
-response_message_name = convert_camel_case_to_lower_case_underscore(service.response_message.structure.type.name)
+lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
 
 header_files = [
-    include_base + '/' + service_name + '__rosidl_typesupport_connext_c.h',
+    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_c.h',
     'rosidl_typesupport_connext_cpp/service_type_support.h',
-    'rosidl_typesupport_connext_cpp/message_type_support.h'
+    'rosidl_typesupport_connext_cpp/message_type_support.h',
     'rmw/rmw.h',
     'rosidl_typesupport_cpp/service_type_support.hpp',
     'rosidl_typesupport_connext_c/identifier.h',
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
-    include_base + '/' + service_name + '.h',
-    include_base + '/dds_connext/' + service.request_message.structure.type.name + '_Support.h',
-    include_base + '/' + request_message_name + '__rosidl_typesupport_connext_c.h',
-    include_base + '/dds_connext/' + service.response_message.structure.type.name + '_Support.h',
-    include_base + '/' + response_message_name + '__rosidl_typesupport_connext_c.h'
+    include_base + '/dds_connext/' + include_prefix + '_Support.h',
+    include_base + '/' + lower_case_include_prefix + '.h',
 # Re-use most of the functions from C++ typesupport
-    include_base + '/' + service_name + '__rosidl_typesupport_connext_cpp.hpp',
+    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
 ]
 
 dds_specific_header_files = [
@@ -84,6 +62,26 @@ dds_specific_header_files = [
 @[    end if]@
 #include "@(header_file)"
 @[end for]@
+
+@{
+TEMPLATE(
+    'msg__type_support_c.cpp.em',
+    package_name=package_name, interface_path=interface_path,
+    message=service.request_message,
+    include_prefix=include_prefix,
+    include_directives=include_directives
+)
+}@
+
+@{
+TEMPLATE(
+    'msg__type_support_c.cpp.em',
+    package_name=package_name, interface_path=interface_path,
+    message=service.response_message,
+    include_prefix=include_prefix,
+    include_directives=include_directives
+)
+}@
 
 class DDSDomainParticipant;
 class DDSDataReader;
@@ -344,7 +342,7 @@ get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier)
     untyped_replier);
 }
 
-static service_type_support_callbacks_t __callbacks = {
+static service_type_support_callbacks_t _@(service.structure_type.name)__callbacks = {
   "@(package_name)",
   "@(service.structure_type.name)",
   &create_requester__@(service.structure_type.name),
@@ -361,9 +359,9 @@ static service_type_support_callbacks_t __callbacks = {
   &get_reply_datawriter__@(service.structure_type.name)
 };
 
-static rosidl_service_type_support_t __type_support = {
+static rosidl_service_type_support_t _@(service.structure_type.name)__type_support = {
   rosidl_typesupport_connext_c__identifier,
-  &__callbacks,
+  &_@(service.structure_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
@@ -373,7 +371,7 @@ ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
   rosidl_typesupport_connext_c,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
   @(service.structure_type.name))() {
-  return &__type_support;
+  return &_@(service.structure_type.name)__type_support;
 }
 
 #if defined(__cplusplus)

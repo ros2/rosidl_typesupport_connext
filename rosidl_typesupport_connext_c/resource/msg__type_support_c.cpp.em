@@ -15,25 +15,26 @@ from rosidl_parser.definition import String
 from rosidl_parser.definition import WString
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-message_name = convert_camel_case_to_lower_case_underscore(message.structure.type.name)
+
+lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
 
 system_header_files = [
     'cassert', 'limits'
 ]
 
 header_files = [
-    include_base + '/' + message_name + '__rosidl_typesupport_connext_c.h',
+    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_c.h',
     'rcutils/types/uint8_array.h',
     'rosidl_typesupport_connext_c/identifier.h',
     'rosidl_typesupport_connext_cpp/message_type_support.h',
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
-    include_base + '/' + message_name + '__struct.h',
-    include_base + '/' + message_name + '__functions.h'
+    include_base + '/' + lower_case_include_prefix + '__struct.h',
+    include_base + '/' + lower_case_include_prefix + '__functions.h'
 ]
 
 dds_specific_header_files = [
-    include_base + '/dds_connext/' + message.structure.type.name + '_Support.h',
-    include_base + '/dds_connext/' + message.structure.type.name + '_Plugin.h'
+    include_base + '/dds_connext/' + include_prefix + '_Support.h',
+    include_base + '/dds_connext/' + include_prefix + '_Plugin.h'
 ]
 }@
 
@@ -142,8 +143,11 @@ for member in message.structure.members:
 from collections import OrderedDict
 forward_declares = OrderedDict()
 for member in message.structure.members:
-    if isinstance(member.type, NamespacedType):
-        _, member_names = forward_declares.setdefault(member.type.name, (member.type, []))
+    type_ = member.type
+    if isinstance(type_, NestedType):
+       type_ = type_.basetype
+    if isinstance(type_, NamespacedType):
+        _, member_names = forward_declares.setdefault(type_.name, (type_, []))
         member_names.append(member.name)
 }@
 
@@ -152,7 +156,7 @@ for member in message.structure.members:
 // Member '@(name)'
 @[  end for]@
 @[  if member_type.namespaces[0] != package_name]@
-ROSIDL_TYPESUPPORT_CONNEXT_C_IMPORT_@(member_type.namespaces[0])
+ROSIDL_TYPESUPPORT_CONNEXT_C_IMPORT_@(package_name)
 @[  end if]@
 const rosidl_message_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
@@ -169,17 +173,14 @@ __dds_cpp_msg_type_prefix = '::'.join(message.structure.type.namespaces + ['dds_
 __dds_cpp_msg_type = __dds_cpp_msg_type_prefix + '_'
 }@
 
-using __dds_msg_type = @(__dds_cpp_msg_type);
-using __ros_msg_type = @(__ros_c_msg_type);
-
 static DDS_TypeCode *
-get_type_code()
+_@(message.structure.type.name)__get_type_code()
 {
   return @(__dds_cpp_msg_type_prefix)_TypeSupport::get_typecode();
 }
 
 static bool
-convert_ros_to_dds(const void * untyped_ros_message, void * untyped_dds_message)
+_@(message.structure.type.name)__convert_ros_to_dds(const void * untyped_ros_message, void * untyped_dds_message)
 {
   if (!untyped_ros_message) {
     fprintf(stderr, "ros message handle is null\n");
@@ -189,8 +190,10 @@ convert_ros_to_dds(const void * untyped_ros_message, void * untyped_dds_message)
     fprintf(stderr, "dds message handle is null\n");
     return false;
   }
-  const __ros_msg_type * ros_message = static_cast<const __ros_msg_type *>(untyped_ros_message);
-  __dds_msg_type * dds_message = static_cast<__dds_msg_type *>(untyped_dds_message);
+  const @(__ros_c_msg_type) * ros_message =
+    static_cast<const @(__ros_c_msg_type) *>(untyped_ros_message);
+  @(__dds_cpp_msg_type) * dds_message =
+    static_cast<@(__dds_cpp_msg_type) *>(untyped_dds_message);
 @[if not message.structure.members]@
   // No fields is a no-op.
   (void)dds_message;
@@ -299,7 +302,7 @@ if isinstance(type_, NestedType):
 }
 
 static bool
-convert_dds_to_ros(const void * untyped_dds_message, void * untyped_ros_message)
+_@(message.structure.type.name)__convert_dds_to_ros(const void * untyped_dds_message, void * untyped_ros_message)
 {
   if (!untyped_ros_message) {
     fprintf(stderr, "ros message handle is null\n");
@@ -309,8 +312,10 @@ convert_dds_to_ros(const void * untyped_dds_message, void * untyped_ros_message)
     fprintf(stderr, "dds message handle is null\n");
     return false;
   }
-  const __dds_msg_type * dds_message = static_cast<const __dds_msg_type *>(untyped_dds_message);
-  __ros_msg_type * ros_message = static_cast<__ros_msg_type *>(untyped_ros_message);
+  const @(__dds_cpp_msg_type) * dds_message =
+    static_cast<const @(__dds_cpp_msg_type) *>(untyped_dds_message);
+  @(__ros_c_msg_type) * ros_message =
+    static_cast<@(__ros_c_msg_type) *>(untyped_ros_message);
 @[if not message.structure.members]@
   // No fields is a no-op.
   (void)dds_message;
@@ -409,7 +414,7 @@ if isinstance(type_, NestedType):
 
 
 static bool
-to_cdr_stream(
+_@(message.structure.type.name)__to_cdr_stream(
   const void * untyped_ros_message,
   rcutils_uint8_array_t * cdr_stream)
 {
@@ -419,18 +424,19 @@ to_cdr_stream(
   if (!cdr_stream) {
     return false;
   }
-  const __ros_msg_type * ros_message = static_cast<const __ros_msg_type *>(untyped_ros_message);
-  __dds_msg_type dds_message;
-  if (!convert_ros_to_dds(ros_message, &dds_message)) {
+  const @(__ros_c_msg_type) * ros_message =
+    static_cast<const @(__ros_c_msg_type) *>(untyped_ros_message);
+  @(__dds_cpp_msg_type) dds_message;
+  if (!_@(message.structure.type.name)__convert_ros_to_dds(ros_message, &dds_message)) {
     return false;
   }
 
   // call the serialize function for the first time to get the expected length of the message
   unsigned int expected_length;
-  if (@(message.structure.type.name)_Plugin_serialize_to_cdr_buffer(
+  if (@(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
       NULL, &expected_length, &dds_message) != RTI_TRUE)
   {
-    fprintf(stderr, "failed to call @(message.structure.type.name)_Plugin_serialize_to_cdr_buffer()\n");
+    fprintf(stderr, "failed to call @(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer()\n");
     return false;
   }
   cdr_stream->buffer_length = expected_length;
@@ -444,7 +450,7 @@ to_cdr_stream(
   }
   // call the function again and fill the buffer this time
   unsigned int buffer_length_uint = static_cast<unsigned int>(cdr_stream->buffer_length);
-  if (@(message.structure.type.name)_Plugin_serialize_to_cdr_buffer(
+  if (@(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
       reinterpret_cast<char *>(cdr_stream->buffer),
       &buffer_length_uint,
       &dds_message) != RTI_TRUE)
@@ -456,7 +462,7 @@ to_cdr_stream(
 }
 
 static bool
-to_message(
+_@(message.structure.type.name)__to_message(
   const rcutils_uint8_array_t * cdr_stream,
   void * untyped_ros_message)
 {
@@ -467,13 +473,13 @@ to_message(
     return false;
   }
 
-  __dds_msg_type * dds_message =
+  @(__dds_cpp_msg_type) * dds_message =
     @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
   if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
-  if (@(message.structure.type.name)_Plugin_deserialize_from_cdr_buffer(
+  if (@(__dds_cpp_msg_type_prefix)_Plugin_deserialize_from_cdr_buffer(
       dds_message,
       reinterpret_cast<char *>(cdr_stream->buffer),
       static_cast<unsigned int>(cdr_stream->buffer_length)) != RTI_TRUE)
@@ -481,7 +487,7 @@ to_message(
     fprintf(stderr, "deserialize from cdr buffer failed\n");
     return false;
   }
-  bool success = convert_dds_to_ros(dds_message, untyped_ros_message);
+  bool success = _@(message.structure.type.name)__convert_dds_to_ros(dds_message, untyped_ros_message);
   if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
     return false;
   }
@@ -491,19 +497,19 @@ to_message(
 @
 @# // Collect the callback functions and provide a function to get the type support struct.
 
-static message_type_support_callbacks_t __callbacks = {
+static message_type_support_callbacks_t _@(message.structure.type.name)__callbacks = {
   "@(package_name)",  // package_name
   "@(message.structure.type.name)",  // message_name
-  get_type_code,  // get_type_code
-  convert_ros_to_dds,  // convert_ros_to_dds
-  convert_dds_to_ros,  // convert_dds_to_ros
-  to_cdr_stream,  // to_cdr_stream
-  to_message  // to_message
+  _@(message.structure.type.name)__get_type_code,  // get_type_code
+  _@(message.structure.type.name)__convert_ros_to_dds,  // convert_ros_to_dds
+  _@(message.structure.type.name)__convert_dds_to_ros,  // convert_dds_to_ros
+  _@(message.structure.type.name)__to_cdr_stream,  // to_cdr_stream
+  _@(message.structure.type.name)__to_message  // to_message
 };
 
-static rosidl_message_type_support_t __type_support = {
+static rosidl_message_type_support_t _@(message.structure.type.name)__type_support = {
   rosidl_typesupport_connext_c__identifier,
-  &__callbacks,
+  &_@(message.structure.type.name)__callbacks,
   get_message_typesupport_handle_function,
 };
 
@@ -512,7 +518,7 @@ ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
     @(', '.join([package_name] + list(interface_path.parents[0].parts))),
     @(message.structure.type.name))() {
-  return &__type_support;
+  return &_@(message.structure.type.name)__type_support;
 }
 
 #if defined(__cplusplus)

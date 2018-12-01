@@ -19,7 +19,8 @@ from rosidl_parser.definition import Message
 for message in content.get_elements_of_type(Message):
     TEMPLATE(
         'msg__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, message=message,
+        package_name=package_name, interface_path=interface_path,
+        message=message, include_prefix=message.structure.type.name,
         include_directives=include_directives
     )
 #######################################################################
@@ -29,7 +30,8 @@ from rosidl_parser.definition import Service
 for service in content.get_elements_of_type(Service):
     TEMPLATE(
         'srv__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, service=service,
+        package_name=package_name, interface_path=interface_path,
+        service=service, include_prefix=service.structure_type.name,
         include_directives=include_directives
     )
 #######################################################################
@@ -39,17 +41,23 @@ from rosidl_parser.definition import Action
 for action in content.get_elements_of_type(Action):
     TEMPLATE(
         'srv__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, service=action.goal_service,
+        package_name=package_name, interface_path=interface_path,
+        service=action.goal_service,
+        include_prefix=action.goal_service.structure_type.name,
         include_directives=include_directives
     )
     TEMPLATE(
         'srv__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, service=action.result_service,
+        package_name=package_name, interface_path=interface_path,
+        service=action.result_service,
+        include_prefix=action.result_service.structure_type.name,
         include_directives=include_directives
     )
     TEMPLATE(
         'msg__type_support.cpp.em',
-        package_name=package_name, interface_path=interface_path, message=action.feedback_message,
+        package_name=package_name, interface_path=interface_path,
+        message=action.feedback_message,
+        include_prefix=action.feedback_message.structure.type.name,
         include_directives=include_directives
     )
 }@

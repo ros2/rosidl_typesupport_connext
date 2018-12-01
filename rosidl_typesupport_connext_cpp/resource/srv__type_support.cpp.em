@@ -1,40 +1,20 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/idl__dds_connext__type_support.cpp.em
 
 @{
-TEMPLATE(
-    'msg__type_support.cpp.em',
-    package_name=package_name, interface_path=interface_path, message=service.request_message,
-    include_directives=include_directives
-)
-}@
-
-@{
-TEMPLATE(
-    'msg__type_support.cpp.em',
-    package_name=package_name, interface_path=interface_path, message=service.response_message,
-    include_directives=include_directives
-)
-}@
-
-@{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-service_name = convert_camel_case_to_lower_case_underscore(service.structure_type.name)
-request_message_name = convert_camel_case_to_lower_case_underscore(service.request_message.structure.type.name)
-response_message_name = convert_camel_case_to_lower_case_underscore(service.response_message.structure.type.name)
+lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
 
 header_files = [
-    include_base + '/' + service_name + '__rosidl_typesupport_connext_cpp.hpp',
+    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
     'rmw/error_handling.h',
     'rosidl_typesupport_connext_cpp/identifier.hpp',
     'rosidl_typesupport_connext_cpp/service_type_support.h',
     'rosidl_typesupport_connext_cpp/service_type_support_decl.hpp',
-    include_base + '/' + service_name + '__struct.hpp',
-    include_base + '/dds_connext/' + service.request_message.structure.type.name + '_Support.h',
-    include_base + '/' + request_message_name + '__rosidl_typesupport_connext_cpp.hpp',
-    include_base + '/dds_connext/' + service.response_message.structure.type.name + '_Support.h',
-    include_base + '/' + response_message_name + '__rosidl_typesupport_connext_cpp.hpp'
+    include_base + '/' + lower_case_include_prefix + '__struct.hpp',
+    include_base + '/dds_connext/' + include_prefix + '_Support.h',
+    include_base + '/dds_connext/' + include_prefix + '_Plugin.h'
 ]
 
 dds_specific_header_files = [
@@ -83,12 +63,23 @@ dds_specific_header_files = [
 @[end for]@
 
 @{
-# TODO(hidmic): still necessary?
-# header_filename = get_header_filename_from_msg_name(spec.srv_name)
-# if header_filename.endswith('__request'):
-#     header_filename = header_filename[:-9]
-# elif header_filename.endswith('__response'):
-#     header_filename = header_filename[:-10]
+TEMPLATE(
+    'msg__type_support.cpp.em',
+    package_name=package_name, interface_path=interface_path,
+    message=service.request_message,
+    include_prefix=include_prefix,
+    include_directives=include_directives
+)
+}@
+
+@{
+TEMPLATE(
+    'msg__type_support.cpp.em',
+    package_name=package_name, interface_path=interface_path,
+    message=service.response_message,
+    include_prefix=include_prefix,
+    include_directives=include_directives
+)
 }@
 
 class DDSDomainParticipant;
@@ -376,7 +367,7 @@ bool send_response__@(service.structure_type.name)(
   const rmw_request_id_t * request_header,
   const void * untyped_ros_response)
 {
-  using ROSResponseType = @(__ros_response_msg_type);
+  using ROSResponseType = const @(__ros_response_msg_type);
   using ReplierType = connext::Replier<
     @(__dds_request_msg_type),
     @(__dds_response_msg_type)
@@ -463,7 +454,7 @@ get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier)
   return replier->get_reply_datawriter();
 }
 
-static service_type_support_callbacks_t callbacks = {
+static service_type_support_callbacks_t _@(service.structure_type.name)__callbacks = {
   "@(package_name)",
   "@(service.structure_type.name)",
   &create_requester__@(service.structure_type.name),
@@ -480,9 +471,9 @@ static service_type_support_callbacks_t callbacks = {
   &get_reply_datawriter__@(service.structure_type.name),
 };
 
-static rosidl_service_type_support_t handle = {
+static rosidl_service_type_support_t _@(service.structure_type.name)__handle = {
   rosidl_typesupport_connext_cpp::typesupport_identifier,
-  &callbacks,
+  &_@(service.structure_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
@@ -501,7 +492,7 @@ ROSIDL_TYPESUPPORT_CONNEXT_CPP_EXPORT_@(package_name)
 const rosidl_service_type_support_t *
 get_service_type_support_handle<@(__ros_srv_type)>()
 {
-  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::handle;
+  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.structure_type.name)__handle;
 }
 
 }  // namespace rosidl_typesupport_connext_cpp
@@ -515,8 +506,8 @@ const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
     rosidl_typesupport_connext_cpp,
     @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(service.structure_type.name))();
-  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::handle;
+    @(service.structure_type.name))() {
+  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.structure_type.name)__handle;
 }
 
 #ifdef __cplusplus

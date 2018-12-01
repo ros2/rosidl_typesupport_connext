@@ -124,7 +124,7 @@ const rosidl_service_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
     rosidl_typesupport_connext_cpp,
     @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(service.structure_type.name))();
+    @(interface_path.stem))();
 
 #ifdef __cplusplus
 }
