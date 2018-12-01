@@ -20,7 +20,7 @@ TEMPLATE(
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-service_name = convert_camel_case_to_lower_case_underscore(service.structure.type.name)
+service_name = convert_camel_case_to_lower_case_underscore(service.structure_type.name)
 request_message_name = convert_camel_case_to_lower_case_underscore(service.request_message.structure.type.name)
 response_message_name = convert_camel_case_to_lower_case_underscore(service.response_message.structure.type.name)
 
@@ -105,8 +105,8 @@ namespace typesupport_connext_cpp
 {
 
 @{
-__ros_srv_pkg_prefix = '::'.join(service.structure.namespaces)
-__ros_srv_type = __ros_srv_pkg_prefix + '::' + service.structure.type.name
+__ros_srv_pkg_prefix = '::'.join(service.structure_type.namespaces)
+__ros_srv_type = __ros_srv_pkg_prefix + '::' + service.structure_type.name
 __ros_request_msg_type = __ros_srv_pkg_prefix + '::' + service.request_message.structure.type.name
 __ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message.structure.type.name
 __dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.type.name + '_'
