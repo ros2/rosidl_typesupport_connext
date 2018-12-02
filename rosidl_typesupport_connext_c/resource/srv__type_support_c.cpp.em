@@ -3,20 +3,22 @@
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
-lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
+cpp_include_prefix = interface_path.stem
+
+c_include_prefix = convert_camel_case_to_lower_case_underscore(cpp_include_prefix)
 
 header_files = [
-    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_c.h',
+    include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_c.h',
     'rosidl_typesupport_connext_cpp/service_type_support.h',
     'rosidl_typesupport_connext_cpp/message_type_support.h',
     'rmw/rmw.h',
     'rosidl_typesupport_cpp/service_type_support.hpp',
     'rosidl_typesupport_connext_c/identifier.h',
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
-    include_base + '/dds_connext/' + include_prefix + '_Support.h',
-    include_base + '/' + lower_case_include_prefix + '.h',
+    include_base + '/dds_connext/' + cpp_include_prefix + '_Support.h',
+    include_base + '/' + c_include_prefix + '.h',
 # Re-use most of the functions from C++ typesupport
-    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
+    include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
 ]
 
 dds_specific_header_files = [
@@ -68,7 +70,6 @@ TEMPLATE(
     'msg__type_support_c.cpp.em',
     package_name=package_name, interface_path=interface_path,
     message=service.request_message,
-    include_prefix=include_prefix,
     include_directives=include_directives
 )
 }@
@@ -78,7 +79,6 @@ TEMPLATE(
     'msg__type_support_c.cpp.em',
     package_name=package_name, interface_path=interface_path,
     message=service.response_message,
-    include_prefix=include_prefix,
     include_directives=include_directives
 )
 }@

@@ -16,12 +16,6 @@ dds_specific_header_files = [
     include_base + '/dds_connext/' + interface_path.stem + '_Plugin.h',
     'ndds/ndds_cpp.h'
 ]
-# TODO(hidmic): no longer needed?
-# header_filename = get_header_filename_from_msg_name(spec.base_type.type)
-# if header_filename.endswith('__request'):
-#     header_filename = header_filename[:-9]
-# elif header_filename.endswith('__response'):
-#     header_filename = header_filename[:-10]
 }@
 
 @[for header_file in header_files]@

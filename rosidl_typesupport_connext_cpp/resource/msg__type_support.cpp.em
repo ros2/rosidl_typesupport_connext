@@ -11,14 +11,14 @@ from rosidl_parser.definition import NestedType
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
 
-lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
+include_prefix = convert_camel_case_to_lower_case_underscore(interface_path.stem)
 
 system_header_files = [
     'limits', 'stdexcept'
 ]
 
 header_files = [
-    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
+    include_base + '/' + include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
     'rcutils/types/uint8_array.h',
     'rosidl_typesupport_cpp/message_type_support.hpp',
     'rosidl_typesupport_connext_cpp/identifier.hpp',

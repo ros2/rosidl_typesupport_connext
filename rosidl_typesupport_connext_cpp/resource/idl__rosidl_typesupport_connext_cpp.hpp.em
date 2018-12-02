@@ -55,7 +55,8 @@ for action in content.get_elements_of_type(Action):
     )
     TEMPLATE(
         'srv__rosidl_typesupport_connext_cpp.hpp.em',
-        package_name=package_name, interface_path=interface_path, service=action.result_service,
+        package_name=package_name, interface_path=interface_path,
+        service=action.result_service,
         include_directives=include_directives
     )
     TEMPLATE(

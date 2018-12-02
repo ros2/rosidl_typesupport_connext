@@ -16,25 +16,26 @@ from rosidl_parser.definition import WString
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
 
-lower_case_include_prefix = convert_camel_case_to_lower_case_underscore(include_prefix)
+cpp_include_prefix = interface_path.stem
+c_include_prefix = convert_camel_case_to_lower_case_underscore(cpp_include_prefix)
 
 system_header_files = [
     'cassert', 'limits'
 ]
 
 header_files = [
-    include_base + '/' + lower_case_include_prefix + '__rosidl_typesupport_connext_c.h',
+    include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_c.h',
     'rcutils/types/uint8_array.h',
     'rosidl_typesupport_connext_c/identifier.h',
     'rosidl_typesupport_connext_cpp/message_type_support.h',
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
-    include_base + '/' + lower_case_include_prefix + '__struct.h',
-    include_base + '/' + lower_case_include_prefix + '__functions.h'
+    include_base + '/' + c_include_prefix + '__struct.h',
+    include_base + '/' + c_include_prefix + '__functions.h'
 ]
 
 dds_specific_header_files = [
-    include_base + '/dds_connext/' + include_prefix + '_Support.h',
-    include_base + '/dds_connext/' + include_prefix + '_Plugin.h'
+    include_base + '/dds_connext/' + cpp_include_prefix + '_Support.h',
+    include_base + '/dds_connext/' + cpp_include_prefix + '_Plugin.h'
 ]
 }@
 
