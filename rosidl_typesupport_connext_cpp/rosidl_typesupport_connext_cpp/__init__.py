@@ -98,7 +98,7 @@ def generate_dds_connext_cpp(
 
 def _inject_unused_attribute(pkg_name, msg_name, lines):
     # prepend attribute before constants of string type
-    prefix = 'static const DDS_Char * Constants__'
+    prefix = 'static const DDS_Char *'
     inject_prefix = '__attribute__((unused)) '
     for index, line in enumerate(lines):
         if not line.lstrip().startswith(prefix):
