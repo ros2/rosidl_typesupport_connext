@@ -27,7 +27,6 @@ dds_specific_header_files = [
     'ndds/ndds_requestreply_cpp.h'
 ]
 }@
-
 #ifdef Connext_GLIBCXX_USE_CXX11_ABI_ZERO
 #define _GLIBCXX_USE_CXX11_ABI 0
 #endif
@@ -99,7 +98,6 @@ __ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message
 __dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.type.name + '_'
 __dds_response_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.response_message.structure.type.name + '_'
 }@
-
 static void * create_requester__@(service.structure_type.name)(
   void * untyped_participant,
   const char * request_topic_str,
@@ -139,9 +137,9 @@ static int64_t send_request__@(service.structure_type.name)(
   connext::WriteSample<@(__dds_request_msg_type)> request;
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-      rosidl_typesupport_connext_c,
-      @(', '.join(service.request_message.structure.type.namespaces)),
-      @(service.request_message.structure.type.name))();
+    rosidl_typesupport_connext_c,
+    @(', '.join(service.request_message.structure.type.namespaces)),
+    @(service.request_message.structure.type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_ros_to_dds(
@@ -214,9 +212,9 @@ static bool take_request__@(service.structure_type.name)(
 
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-      rosidl_typesupport_connext_c,
-      @(', '.join(service.request_message.structure.type.namespaces)),
-      @(service.request_message.structure.type.name))();
+    rosidl_typesupport_connext_c,
+    @(', '.join(service.request_message.structure.type.namespaces)),
+    @(service.request_message.structure.type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_dds_to_ros(
@@ -263,9 +261,9 @@ static bool take_response__@(service.structure_type.name)(
 
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-      rosidl_typesupport_connext_c,
-      @(', '.join(service.response_message.structure.type.namespaces)),
-      @(service.response_message.structure.type.name))();
+    rosidl_typesupport_connext_c,
+    @(', '.join(service.response_message.structure.type.namespaces)),
+    @(service.response_message.structure.type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_dds_to_ros(
@@ -289,9 +287,9 @@ bool send_response__@(service.structure_type.name)(
   connext::WriteSample<@(__dds_response_msg_type)> response;
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-      rosidl_typesupport_connext_c,
-      @(', '.join(service.response_message.structure.type.namespaces)),
-      @(service.response_message.structure.type.name))();
+    rosidl_typesupport_connext_c,
+    @(', '.join(service.response_message.structure.type.namespaces)),
+    @(service.response_message.structure.type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_ros_to_dds(
@@ -365,12 +363,12 @@ static rosidl_service_type_support_t _@(service.structure_type.name)__type_suppo
   get_service_typesupport_handle_function,
 };
 
-
 const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
   rosidl_typesupport_connext_c,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-  @(service.structure_type.name))() {
+  @(service.structure_type.name))()
+{
   return &_@(service.structure_type.name)__type_support;
 }
 

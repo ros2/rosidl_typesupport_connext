@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/idl__dds_connext__type_support.cpp.em
-
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 from rosidl_parser.definition import Array
@@ -13,10 +12,6 @@ include_base = '/'.join(include_parts)
 
 include_prefix = convert_camel_case_to_lower_case_underscore(interface_path.stem)
 
-system_header_files = [
-    'limits', 'stdexcept'
-]
-
 header_files = [
     include_base + '/' + include_prefix + '__rosidl_typesupport_connext_cpp.hpp',
     'rcutils/types/uint8_array.h',
@@ -26,17 +21,6 @@ header_files = [
     'rosidl_typesupport_connext_cpp/message_type_support_decl.hpp'
 ]
 }@
-
-@[for header_file in system_header_files]@
-@[    if header_file in include_directives]@
-// already included above
-// @
-@[    else]@
-@{include_directives.add(header_file)}@
-@[    end if]@
-#include <@(header_file)>
-@[end for]@
-
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -66,7 +50,6 @@ class @(type_.name)_;
 
 namespace typesupport_connext_cpp
 {
-
 @{
 member_ros_msg_pkg_prefix = '::'.join(type_.namespaces)
 member_ros_msg_type = member_ros_msg_pkg_prefix + '::' + type_.name
@@ -382,9 +365,10 @@ extern "C"
 
 const rosidl_message_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-    rosidl_typesupport_connext_cpp,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(message.structure.type.name))() {
+  rosidl_typesupport_connext_cpp,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(message.structure.type.name))()
+{
   return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.type.name)__handle;
 }
 

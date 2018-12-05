@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/idl__dds_connext__type_support.cpp.em
-
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
@@ -22,11 +21,9 @@ header_files = [
 dds_specific_header_files = [
     'ndds/connext_cpp/connext_cpp_requester_details.h',
     'ndds/ndds_cpp.h',
-    'ndds/ndds_requestreply_cpp.h'    
+    'ndds/ndds_requestreply_cpp.h'
 ]
-
 }@
-
 #ifdef Connext_GLIBCXX_USE_CXX11_ABI_ZERO
 #define _GLIBCXX_USE_CXX11_ABI 0
 #endif
@@ -91,10 +88,8 @@ struct DDS_SampleIdentity_t;
 namespace @(ns)
 {
 @[end for]@
-
 namespace typesupport_connext_cpp
 {
-
 @{
 __ros_srv_pkg_prefix = '::'.join(service.structure_type.namespaces)
 __ros_srv_type = __ros_srv_pkg_prefix + '::' + service.structure_type.name
@@ -504,9 +499,10 @@ extern "C"
 
 const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
-    rosidl_typesupport_connext_cpp,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(service.structure_type.name))() {
+  rosidl_typesupport_connext_cpp,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(service.structure_type.name))()
+{
   return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.structure_type.name)__handle;
 }
 

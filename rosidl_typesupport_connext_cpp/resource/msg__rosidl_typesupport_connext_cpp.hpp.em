@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/idl__rosidl_typesupport_connext_cpp.hpp.em
-
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 include_parts = [package_name] + list(interface_path.parents[0].parts)
@@ -17,7 +16,6 @@ dds_specific_header_files = [
     'ndds/ndds_cpp.h'
 ]
 }@
-
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -64,14 +62,12 @@ class DDSDataReader;
 namespace @(ns)
 {
 @[end for]@
-
 @{
 __ros_msg_pkg_prefix = '::'.join(message.structure.type.namespaces)
 __ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.type.name
 __dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.type.name
 __dds_msg_type = __dds_msg_type_prefix + '_'
 }@
-
 namespace typesupport_connext_cpp
 {
 
@@ -115,9 +111,9 @@ extern "C"
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
 const rosidl_message_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-    rosidl_typesupport_connext_cpp,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(message.structure.type.name))();
+  rosidl_typesupport_connext_cpp,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(message.structure.type.name))();
 
 #ifdef __cplusplus
 }

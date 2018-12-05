@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_c/resource/srv__rosidl_typesupport_connext_c.h.em
-
 @{
 header_files = [
     'rosidl_generator_c/service_type_support_struct.h',
@@ -7,7 +6,6 @@ header_files = [
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h'
 ]
 }@
-
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -26,9 +24,9 @@ extern "C"
 ROSIDL_TYPESUPPORT_CONNEXT_C_PUBLIC_@(package_name)
 const rosidl_service_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
-    rosidl_typesupport_connext_c,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(interface_path.stem))();
+  rosidl_typesupport_connext_c,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(interface_path.stem))();
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/srv__rosidl_typesupport_connext_cpp.hpp.em
-
 @{
 header_files = [
     'rmw/types.h',
@@ -8,7 +7,6 @@ header_files = [
     package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h'
 ]
 }@
-
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -20,11 +18,9 @@ header_files = [
 @[end for]@
 
 @[for ns in service.structure_type.namespaces]@
-
 namespace @(ns)
 {
 @[end for]@
-
 namespace typesupport_connext_cpp
 {
 
@@ -108,10 +104,8 @@ void *
 get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier);
 
 }  // namespace typesupport_connext_cpp
-
 @[for ns in reversed(service.structure_type.namespaces)]@
 }  // namespace @(ns)
-
 @[end for]@
 
 #ifdef __cplusplus
@@ -122,9 +116,9 @@ extern "C"
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
 const rosidl_service_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
-    rosidl_typesupport_connext_cpp,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(interface_path.stem))();
+  rosidl_typesupport_connext_cpp,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(interface_path.stem))();
 
 #ifdef __cplusplus
 }

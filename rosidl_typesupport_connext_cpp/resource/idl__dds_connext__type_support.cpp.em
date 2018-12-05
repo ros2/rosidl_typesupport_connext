@@ -2,6 +2,9 @@
 // with input from @(package_name):@(interface_path)
 // generated code does not contain a copyright notice
 
+#include <limits>
+#include <stdexcept>
+
 @{
 #######################################################################
 # EmPy template for generating <idl>__type_support.cpp files

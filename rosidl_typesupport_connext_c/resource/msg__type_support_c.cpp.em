@@ -1,5 +1,4 @@
 @# Included from rosidl_typesupport_connext_c/resource/idl__dds_connext__type_support_c.cpp.em
-
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
 from rosidl_generator_c import idl_structure_type_to_c_include_prefix
@@ -19,10 +18,6 @@ include_base = '/'.join(include_parts)
 cpp_include_prefix = interface_path.stem
 c_include_prefix = convert_camel_case_to_lower_case_underscore(cpp_include_prefix)
 
-system_header_files = [
-    'cassert', 'limits'
-]
-
 header_files = [
     include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_c.h',
     'rcutils/types/uint8_array.h',
@@ -38,17 +33,6 @@ dds_specific_header_files = [
     include_base + '/dds_connext/' + cpp_include_prefix + '_Plugin.h'
 ]
 }@
-
-@[for header_file in system_header_files]@
-@[    if header_file in include_directives]@
-// already included above
-// @
-@[    else]@
-@{include_directives.add(header_file)}@
-@[    end if]@
-#include <@(header_file)>
-@[end for]@
-
 @[for header_file in header_files]@
 @[    if header_file in include_directives]@
 // already included above
@@ -83,7 +67,6 @@ dds_specific_header_files = [
 #endif
 
 // includes and forward declarations of message dependencies and their conversion functions
-
 @# // Include the message header for each non-primitive field.
 #if defined(__cplusplus)
 extern "C"
@@ -100,7 +83,7 @@ for member in message.structure.members:
        continue
     type_ = member.type
     if isinstance(type_, NestedType):
-       type_ = type_.basetype  
+       type_ = type_.basetype
     if isinstance(type_, String):
         includes.setdefault('rosidl_generator_c/string.h', []).append(member.name)
         includes.setdefault('rosidl_generator_c/string_functions.h', []).append(member.name)
@@ -122,7 +105,6 @@ for member in message.structure.members:
         includes.setdefault(include_prefix + '__struct.h', []).append(member.name)
         includes.setdefault(include_prefix + '__functions.h', []).append(member.name)
 }@
-
 @[if includes]@
 // Include directives for member types
 @[    for header_file, member_names in includes.items()]@
@@ -151,7 +133,6 @@ for member in message.structure.members:
         _, member_names = forward_declares.setdefault(type_.name, (type_, []))
         member_names.append(member.name)
 }@
-
 @[for member_type, member_names in forward_declares.values()]@
 @[  for name in member_names]@
 // Member '@(name)'
@@ -161,19 +142,17 @@ ROSIDL_TYPESUPPORT_CONNEXT_C_IMPORT_@(package_name)
 @[  end if]@
 const rosidl_message_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-    rosidl_typesupport_connext_c,
-    @(', '.join(member_type.namespaces)),
-    @(member_type.name))();
+  rosidl_typesupport_connext_c,
+  @(', '.join(member_type.namespaces)),
+  @(member_type.name))();
 @[end for]@
 
 @# // Make callback functions specific to this message type.
-
 @{
 __ros_c_msg_type = '__'.join(message.structure.type.namespaces + [message.structure.type.name])
 __dds_cpp_msg_type_prefix = '::'.join(message.structure.type.namespaces + ['dds_', message.structure.type.name])
 __dds_cpp_msg_type = __dds_cpp_msg_type_prefix + '_'
 }@
-
 static DDS_TypeCode *
 _@(message.structure.type.name)__get_type_code()
 {
@@ -202,7 +181,7 @@ _@(message.structure.type.name)__convert_ros_to_dds(const void * untyped_ros_mes
 @[end if]@
 @[for member in message.structure.members]@
   // Member name: @(member.name)
-    {
+  {
 @{
 type_ = member.type
 if isinstance(type_, NestedType):
@@ -297,7 +276,6 @@ if isinstance(type_, NestedType):
     }
 @[  end if]@
   }
-
 @[end for]@
   return true;
 }
@@ -370,9 +348,9 @@ if isinstance(type_, NestedType):
 @[    elif isinstance(type_, NamespacedType)]@
       const rosidl_message_type_support_t * ts =
         ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-            rosidl_typesupport_connext_c,
-            @(', '.join(type_.namespaces)),
-            @(type_.name))();
+        rosidl_typesupport_connext_c,
+        @(', '.join(type_.namespaces)),
+        @(type_.name))();
       const message_type_support_callbacks_t * callbacks =
         static_cast<const message_type_support_callbacks_t *>(ts->data);
       callbacks->convert_dds_to_ros(&dds_message->@(member.name)_[i], &ros_i);
@@ -398,9 +376,9 @@ if isinstance(type_, NestedType):
 @[  elif isinstance(member.type, NamespacedType)]@
     const rosidl_message_type_support_t * ts =
       ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-          rosidl_typesupport_connext_c,
-          @(','.join(member.type.namespaces)),
-          @(member.type.name))();
+      rosidl_typesupport_connext_c,
+      @(', '.join(member.type.namespaces)),
+      @(member.type.name))();
     const message_type_support_callbacks_t * callbacks =
       static_cast<const message_type_support_callbacks_t *>(ts->data);
     callbacks->convert_dds_to_ros(&dds_message->@(member.name)_, &ros_message->@(member.name));
@@ -408,7 +386,6 @@ if isinstance(type_, NestedType):
 @{    assert False, 'Unknown member type'}@
 @[  end if]@
   }
-
 @[end for]@
   return true;
 }
@@ -495,9 +472,7 @@ _@(message.structure.type.name)__to_message(
   return success;
 }
 
-@
 @# // Collect the callback functions and provide a function to get the type support struct.
-
 static message_type_support_callbacks_t _@(message.structure.type.name)__callbacks = {
   "@(package_name)",  // package_name
   "@(message.structure.type.name)",  // message_name
@@ -516,9 +491,10 @@ static rosidl_message_type_support_t _@(message.structure.type.name)__type_suppo
 
 const rosidl_message_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
-    rosidl_typesupport_connext_c,
-    @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-    @(message.structure.type.name))() {
+  rosidl_typesupport_connext_c,
+  @(', '.join([package_name] + list(interface_path.parents[0].parts))),
+  @(message.structure.type.name))()
+{
   return &_@(message.structure.type.name)__type_support;
 }
 
