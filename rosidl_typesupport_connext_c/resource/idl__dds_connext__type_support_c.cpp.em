@@ -40,7 +40,7 @@ for action in content.get_elements_of_type(Action):
     TEMPLATE(
         'msg__type_support_c.cpp.em',
         package_name=package_name, interface_path=interface_path,
-        service=action.goal_request,
+        message=action.goal_request,
         include_directives=include_directives
     )
     TEMPLATE(
@@ -52,7 +52,7 @@ for action in content.get_elements_of_type(Action):
     TEMPLATE(
         'msg__type_support_c.cpp.em',
         package_name=package_name, interface_path=interface_path,
-        service=action.result_response,
+        message=action.result_response,
         include_directives=include_directives
     )
     TEMPLATE(
