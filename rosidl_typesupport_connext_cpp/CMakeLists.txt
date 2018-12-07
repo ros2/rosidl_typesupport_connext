@@ -20,7 +20,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(rcutils REQUIRED)
 
 find_package(connext_cmake_module REQUIRED)
 find_package(Connext QUIET MODULE)
@@ -39,6 +38,7 @@ endif()
 
 find_package(ament_cmake_python REQUIRED)
 
+ament_export_dependencies(rcutils)
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_generator_c)

@@ -44,6 +44,7 @@ endif()
 find_package(ament_cmake_python REQUIRED)
 find_package(rosidl_typesupport_connext_cpp REQUIRED)
 
+ament_export_dependencies(rcutils)
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
 ament_export_dependencies(rosidl_generator_c)
