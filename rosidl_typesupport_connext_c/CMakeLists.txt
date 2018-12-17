@@ -62,7 +62,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 ament_target_dependencies(
   ${PROJECT_NAME}
-  "Connext"
   "rosidl_typesupport_connext_cpp")
 ament_export_libraries(${PROJECT_NAME})
 
