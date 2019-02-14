@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_c/${PROJECT_NAME}")
+set(_output_path
+  "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_c/${PROJECT_NAME}")
 set(_dds_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_connext_cpp/${PROJECT_NAME}")
 set(_dds_idl_base_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_dds_idl")
 
