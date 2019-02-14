@@ -189,7 +189,7 @@ convert_dds_message_to_ros(
 @[    if isinstance(member.type.basetype, BasicType)]@
       ros_message.@(member.name)[i] =
         dds_message.@(member.name)_[static_cast<DDS_Long>(i)]@(' == DDS_BOOLEAN_TRUE' if member.type.basetype.type == 'boolean' else '');
-@[    elif isinstance(member.type.basetype, BaseString)]
+@[    elif isinstance(member.type.basetype, BaseString)]@
       ros_message.@(member.name)[i] =
         dds_message.@(member.name)_[static_cast<DDS_Long>(i)];
 @[    else]@
