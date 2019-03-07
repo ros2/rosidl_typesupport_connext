@@ -210,8 +210,8 @@ add_dependencies(
   ${rosidl_generate_interfaces_TARGET}__cpp
 )
 add_dependencies(
-  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
   ${rosidl_generate_interfaces_TARGET}${_target_suffix}
+  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
 )
 
 if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
