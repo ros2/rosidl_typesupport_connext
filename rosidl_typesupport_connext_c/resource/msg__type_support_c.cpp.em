@@ -500,6 +500,7 @@ _@(message.structure.namespaced_type.name)__to_message(
 
   @(__dds_cpp_msg_type) * dds_message =
     @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+
   if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
