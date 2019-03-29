@@ -27,6 +27,8 @@ header_files = [
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
     include_base + '/' + c_include_prefix + '__struct.h',
     include_base + '/' + c_include_prefix + '__functions.h',
+    'rmw/types.h',
+    'rmw/impl/cpp/macros.hpp'
 ]
 
 dds_specific_header_files = [
@@ -517,6 +519,47 @@ _@(message.structure.namespaced_type.name)__to_message(
   return success;
 }
 
+static rmw_ret_t _@(message.structure.namespaced_type.name)__get_serialized_length(void * dds_msg, unsigned int * expected_length)
+{
+@(__dds_cpp_msg_type) * dds_message = static_cast<@(__dds_cpp_msg_type) *>(dds_msg);
+
+ // call the serialize function for the first time to get the expected length of the message
+ if (@(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
+     NULL, expected_length, dds_message) != RTI_TRUE)
+ {
+  RMW_SET_ERROR_MSG("failed to call @(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer()");
+  return RMW_RET_ERROR;
+ }
+
+ return RMW_RET_OK;
+}
+
+static rmw_ret_t _@(message.structure.namespaced_type.name)__create_message(void ** msg, const void * bounds)
+{
+
+ @(__dds_cpp_msg_type) * dds_message =
+  @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+ *msg = (void *) dds_message;
+
+ return RMW_RET_OK;
+}
+
+static rmw_ret_t _@(message.structure.namespaced_type.name)__delete_message(void * msg)
+{
+
+ if(!msg){
+  RMW_SET_ERROR_MSG("msg cannot be null");
+  return RMW_RET_ERROR;
+ }
+
+  @(__dds_cpp_msg_type)* dds_message = static_cast<@(__dds_cpp_msg_type) *>(msg);
+ if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
+  RMW_SET_ERROR_MSG("Error while deleting msg");
+  return RMW_RET_ERROR;
+ }
+ return RMW_RET_OK;
+
+}
 @# // Collect the callback functions and provide a function to get the type support struct.
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
   "@(package_name)",  // package_name
@@ -525,6 +568,9 @@ static message_type_support_callbacks_t _@(message.structure.namespaced_type.nam
   _@(message.structure.namespaced_type.name)__convert_ros_to_dds,  // convert_ros_to_dds
   _@(message.structure.namespaced_type.name)__convert_dds_to_ros,  // convert_dds_to_ros
   _@(message.structure.namespaced_type.name)__to_cdr_stream,  // to_cdr_stream
+  _@(message.structure.type.name)__get_serialized_length,  // get serialized length
+  _@(message.structure.type.name)__create_message,  // create message
+  _@(message.structure.type.name)__delete_message,  // delete message
   _@(message.structure.namespaced_type.name)__to_message  // to_message
 };
 
