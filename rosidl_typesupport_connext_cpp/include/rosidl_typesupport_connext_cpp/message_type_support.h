@@ -15,12 +15,16 @@
 #ifndef ROSIDL_TYPESUPPORT_CONNEXT_CPP__MESSAGE_TYPE_SUPPORT_H_
 #define ROSIDL_TYPESUPPORT_CONNEXT_CPP__MESSAGE_TYPE_SUPPORT_H_
 
+#include <limits>
+
 #include "rcutils/types/uint8_array.h"
 
 #include "rosidl_generator_c/message_type_support_struct.h"
 
 // forward declare DDS_TypeCode
 struct DDS_TypeCode;
+
+const size_t MAX_UINT_SIZE = (std::numeric_limits<unsigned int>::max)();
 
 typedef struct message_type_support_callbacks_t
 {

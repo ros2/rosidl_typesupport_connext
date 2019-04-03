@@ -76,6 +76,7 @@ extern "C"
 {
 #endif
 
+
 @{
 from collections import OrderedDict
 includes = OrderedDict()
@@ -465,7 +466,7 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
     return false;
   }
   cdr_stream->buffer_length = expected_length;
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -499,9 +500,9 @@ _@(message.structure.namespaced_type.name)__to_message(
   }
 
   @(__dds_cpp_msg_type) * dds_message =
-    @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+    static_cast<@(__dds_cpp_msg_type) *>(untyped_dds_message);
 
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
