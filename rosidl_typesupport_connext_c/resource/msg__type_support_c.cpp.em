@@ -9,6 +9,8 @@ from rosidl_parser.definition import AbstractSequence
 from rosidl_parser.definition import AbstractString
 from rosidl_parser.definition import AbstractWString
 from rosidl_parser.definition import Array
+from rosidl_parser.definition import BoundedSequence
+from rosidl_parser.definition import UnboundedSequence
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
@@ -17,6 +19,7 @@ include_base = '/'.join(include_parts)
 
 cpp_include_prefix = interface_path.stem
 c_include_prefix = convert_camel_case_to_lower_case_underscore(cpp_include_prefix)
+message_typename = idl_structure_type_to_c_typename(message.structure.type)
 
 header_files = [
     include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_c.h',
@@ -27,6 +30,7 @@ header_files = [
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
     include_base + '/' + c_include_prefix + '__struct.h',
     include_base + '/' + c_include_prefix + '__functions.h',
+    include_base + '/' + c_include_prefix + '__bounds.h',
     'rmw/types.h',
     'rmw/impl/cpp/macros.hpp'
 ]
@@ -75,7 +79,6 @@ dds_specific_header_files = [
 extern "C"
 {
 #endif
-
 
 @{
 from collections import OrderedDict
@@ -466,7 +469,7 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
     return false;
   }
   cdr_stream->buffer_length = expected_length;
-  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
+  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -500,9 +503,9 @@ _@(message.structure.namespaced_type.name)__to_message(
   }
 
   @(__dds_cpp_msg_type) * dds_message =
-    static_cast<@(__dds_cpp_msg_type) *>(untyped_dds_message);
+    @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
 
-  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
+  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -539,8 +542,88 @@ static rmw_ret_t _@(message.structure.namespaced_type.name)__get_serialized_leng
 static rmw_ret_t _@(message.structure.namespaced_type.name)__create_message(void ** msg, const void * bounds)
 {
 
- @(__dds_cpp_msg_type) * dds_message =
+@(__dds_cpp_msg_type) * dds_message =
   @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+
+const @(message_typename)__bounds * bounds_ = static_cast<const @(message_typename)__bounds *>(bounds);
+
+@[for member in message.structure.members]@
+ // Member name: @(member.name)
+@{
+type_ = member.type
+if isinstance(type_, NestedType):
+ type_ = type_.basetype
+}@
+@[  if isinstance(member.type, UnboundedSequence)]@
+@[   if isinstance(type_, BasicType)]@
+@[    if type_.type == "bool"]@
+DDS_BooleanSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length);
+@[    elif type_.type == "byte"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "char"]@
+DDS_CharSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "float32"]@
+DDS_FloatSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "float64"]@
+DDS_DoubleSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int8"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint8"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int16"]@
+DDS_ShortSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint16"]@
+DDS_UnsignedShortSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int32"]@
+DDS_LongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint32"]@
+DDS_UnsignedLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int64"]@
+DDS_LongLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint64"]@
+DDS_UnsignedLongLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    end if]@
+@[   elif isinstance(type_, UnboundedSequence)]@
+const rosidl_message_type_support_t * ts =
+ ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+ rosidl_typesupport_connext_c,
+ @(', '.join(member.type.namespaces)),
+ @(member.type.name))();
+const message_type_support_callbacks_t * callbacks =
+ static_cast<const message_type_support_callbacks_t *>(ts->data);
+size_t size = @(_type.size);
+for (DDS_Long i = 0; i < static_cast<DDS_Long>(size); ++i) {
+ callbacks->create_message(&dds_message->@(member.name).data[i], );
+}
+@[   end if]@
+@[  end if]@
+@[end for]@
  *msg = (void *) dds_message;
 
  return RMW_RET_OK;
