@@ -1,12 +1,12 @@
 @# Included from rosidl_typesupport_connext_cpp/resource/idl__dds_connext__type_support.cpp.em
 @{
 from rosidl_cmake import convert_camel_case_to_lower_case_underscore
+from rosidl_parser.definition import AbstractGenericString
+from rosidl_parser.definition import AbstractNestedType
 from rosidl_parser.definition import Array
 from rosidl_parser.definition import BasicType
-from rosidl_parser.definition import BaseString
 from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
-from rosidl_parser.definition import NestedType
 include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
 
@@ -35,8 +35,8 @@ header_files = [
 @[for member in message.structure.members]@
 @{
 type_ = member.type
-if isinstance(type_, NestedType):
-   type_ = type_.basetype
+if isinstance(type_, AbstractNestedType):
+   type_ = type_.value_type
 }@
 @[    if isinstance(type_, NamespacedType)]@
 @[        for ns in type_.namespaces]@
@@ -69,7 +69,7 @@ bool convert_dds_message_to_ros(
 @[    end if]@
 @[end for]@
 
-@[for ns in message.structure.type.namespaces]@
+@[for ns in message.structure.namespaced_type.namespaces]@
 
 namespace @(ns)
 {
@@ -79,14 +79,14 @@ namespace typesupport_connext_cpp
 {
 
 @{
-__ros_msg_pkg_prefix = '::'.join(message.structure.type.namespaces)
-__ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.type.name
-__dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.type.name
+__ros_msg_pkg_prefix = '::'.join(message.structure.namespaced_type.namespaces)
+__ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.namespaced_type.name
+__dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.namespaced_type.name
 __dds_msg_type = __dds_msg_type_prefix + '_'
 }@
 
 DDS_TypeCode *
-get_type_code__@(message.structure.type.name)()
+get_type_code__@(message.structure.namespaced_type.name)()
 {
   return @(__dds_msg_type_prefix)_TypeSupport::get_typecode();
 }
@@ -102,7 +102,7 @@ convert_ros_message_to_dds(
 @[end if]@
 @[for member in message.structure.members]@
   // member.name @(member.name)
-@[  if isinstance(member.type, NestedType)]@
+@[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
     size_t size = @(member.type.size);
@@ -112,7 +112,7 @@ convert_ros_message_to_dds(
       throw std::runtime_error("array size exceeds maximum DDS sequence size");
     }
 @[      if isinstance(member.type, BoundedSequence)]@
-    if (size > @(member.type.upper_bound)) {
+    if (size > @(member.type.maximum_size)) {
       throw std::runtime_error("array size exceeds upper bound");
     }
 @[      end if]@
@@ -127,16 +127,16 @@ convert_ros_message_to_dds(
     }
 @[    end if]@
     for (size_t i = 0; i < size; i++) {
-@[    if isinstance(member.type.basetype, BaseString)]@
+@[    if isinstance(member.type.value_type, AbstractGenericString)]@
       DDS_String_free(dds_message.@(member.name)_[static_cast<DDS_Long>(i)]);
       dds_message.@(member.name)_[static_cast<DDS_Long>(i)] =
         DDS_String_dup(ros_message.@(member.name)[i].c_str());
-@[    elif isinstance(member.type.basetype, BasicType)]@
+@[    elif isinstance(member.type.value_type, BasicType)]@
       dds_message.@(member.name)_[static_cast<DDS_Long>(i)] =
         ros_message.@(member.name)[i];
 @[    else]@
       if (
-        !@('::'.join(member.type.basetype.namespaces))::typesupport_connext_cpp::convert_ros_message_to_dds(
+        !@('::'.join(member.type.value_type.namespaces))::typesupport_connext_cpp::convert_ros_message_to_dds(
           ros_message.@(member.name)[i],
           dds_message.@(member.name)_[static_cast<DDS_Long>(i)]))
       {
@@ -145,7 +145,7 @@ convert_ros_message_to_dds(
 @[    end if]@
     }
   }
-@[  elif isinstance(member.type, BaseString)]@
+@[  elif isinstance(member.type, AbstractGenericString)]@
   DDS_String_free(dds_message.@(member.name)_);
   dds_message.@(member.name)_ =
     DDS_String_dup(ros_message.@(member.name).c_str());
@@ -177,7 +177,7 @@ convert_dds_message_to_ros(
 @[end if]@
 @[for member in message.structure.members]@
   // member.name @(member.name)
-@[  if isinstance(member.type, NestedType)]@
+@[  if isinstance(member.type, AbstractNestedType)]@
   {
 @[    if isinstance(member.type, Array)]@
     size_t size = @(member.type.size);
@@ -186,15 +186,15 @@ convert_dds_message_to_ros(
     ros_message.@(member.name).resize(size);
 @[    end if]@
     for (size_t i = 0; i < size; i++) {
-@[    if isinstance(member.type.basetype, BasicType)]@
+@[    if isinstance(member.type.value_type, BasicType)]@
       ros_message.@(member.name)[i] =
-        dds_message.@(member.name)_[static_cast<DDS_Long>(i)]@(' == DDS_BOOLEAN_TRUE' if member.type.basetype.type == 'boolean' else '');
-@[    elif isinstance(member.type.basetype, BaseString)]@
+        dds_message.@(member.name)_[static_cast<DDS_Long>(i)]@(' == DDS_BOOLEAN_TRUE' if member.type.value_type.typename == 'boolean' else '');
+@[    elif isinstance(member.type.value_type, AbstractGenericString)]@
       ros_message.@(member.name)[i] =
         dds_message.@(member.name)_[static_cast<DDS_Long>(i)];
 @[    else]@
       if (
-        !@('::'.join(member.type.basetype.namespaces))::typesupport_connext_cpp::convert_dds_message_to_ros(
+        !@('::'.join(member.type.value_type.namespaces))::typesupport_connext_cpp::convert_dds_message_to_ros(
           dds_message.@(member.name)_[static_cast<DDS_Long>(i)],
           ros_message.@(member.name)[i]))
       {
@@ -205,8 +205,8 @@ convert_dds_message_to_ros(
   }
 @[  elif isinstance(member.type, BasicType)]@
   ros_message.@(member.name) =
-    dds_message.@(member.name)_@(' == DDS_BOOLEAN_TRUE' if member.type.type == 'boolean' else '');
-@[  elif isinstance(member.type, BaseString)]@
+    dds_message.@(member.name)_@(' == DDS_BOOLEAN_TRUE' if member.type.typename == 'boolean' else '');
+@[  elif isinstance(member.type, AbstractGenericString)]@
   ros_message.@(member.name) = dds_message.@(member.name)_;
 @[  else]@
   if (
@@ -223,7 +223,7 @@ convert_dds_message_to_ros(
 }
 
 bool
-to_cdr_stream__@(message.structure.type.name)(
+to_cdr_stream__@(message.structure.namespaced_type.name)(
   const void * untyped_ros_message,
   rcutils_uint8_array_t * cdr_stream)
 {
@@ -284,7 +284,7 @@ to_cdr_stream__@(message.structure.type.name)(
 }
 
 bool
-to_message__@(message.structure.type.name)(
+to_message__@(message.structure.namespaced_type.name)(
   const rcutils_uint8_array_t * cdr_stream,
   void * untyped_ros_message)
 {
@@ -322,25 +322,25 @@ to_message__@(message.structure.type.name)(
   return success;
 }
 
-static message_type_support_callbacks_t _@(message.structure.type.name)__callbacks = {
+static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
   "@(package_name)",
-  "@(message.structure.type.name)",
-  &get_type_code__@(message.structure.type.name),
+  "@(message.structure.namespaced_type.name)",
+  &get_type_code__@(message.structure.namespaced_type.name),
   nullptr,
   nullptr,
-  &to_cdr_stream__@(message.structure.type.name),
-  &to_message__@(message.structure.type.name)
+  &to_cdr_stream__@(message.structure.namespaced_type.name),
+  &to_message__@(message.structure.namespaced_type.name)
 };
 
-static rosidl_message_type_support_t _@(message.structure.type.name)__handle = {
+static rosidl_message_type_support_t _@(message.structure.namespaced_type.name)__handle = {
   rosidl_typesupport_connext_cpp::typesupport_identifier,
-  &_@(message.structure.type.name)__callbacks,
+  &_@(message.structure.namespaced_type.name)__callbacks,
   get_message_typesupport_handle_function,
 };
 
 }  // namespace typesupport_connext_cpp
 
-@[for ns in reversed(message.structure.type.namespaces)]@
+@[for ns in reversed(message.structure.namespaced_type.namespaces)]@
 }  // namespace @(ns)
 
 @[end for]@
@@ -353,7 +353,7 @@ ROSIDL_TYPESUPPORT_CONNEXT_CPP_EXPORT_@(package_name)
 const rosidl_message_type_support_t *
 get_message_type_support_handle<@(__ros_msg_type)>()
 {
-  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.type.name)__handle;
+  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.namespaced_type.name)__handle;
 }
 
 }  // namespace rosidl_typesupport_connext_cpp
@@ -367,9 +367,9 @@ const rosidl_message_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
   rosidl_typesupport_connext_cpp,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-  @(message.structure.type.name))()
+  @(message.structure.namespaced_type.name))()
 {
-  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.type.name)__handle;
+  return &@(__ros_msg_pkg_prefix)::typesupport_connext_cpp::_@(message.structure.namespaced_type.name)__handle;
 }
 
 #ifdef __cplusplus

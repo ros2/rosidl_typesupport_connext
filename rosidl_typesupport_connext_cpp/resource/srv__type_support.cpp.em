@@ -83,7 +83,7 @@ class DDSDomainParticipant;
 class DDSDataReader;
 struct DDS_SampleIdentity_t;
 
-@[for ns in service.structure_type.namespaces]@
+@[for ns in service.namespaced_type.namespaces]@
 
 namespace @(ns)
 {
@@ -91,15 +91,15 @@ namespace @(ns)
 namespace typesupport_connext_cpp
 {
 @{
-__ros_srv_pkg_prefix = '::'.join(service.structure_type.namespaces)
-__ros_srv_type = __ros_srv_pkg_prefix + '::' + service.structure_type.name
-__ros_request_msg_type = __ros_srv_pkg_prefix + '::' + service.request_message.structure.type.name
-__ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message.structure.type.name
-__dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.type.name + '_'
-__dds_response_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.response_message.structure.type.name + '_'
+__ros_srv_pkg_prefix = '::'.join(service.namespaced_type.namespaces)
+__ros_srv_type = __ros_srv_pkg_prefix + '::' + service.namespaced_type.name
+__ros_request_msg_type = __ros_srv_pkg_prefix + '::' + service.request_message.structure.namespaced_type.name
+__ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message.structure.namespaced_type.name
+__dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.namespaced_type.name + '_'
+__dds_response_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.response_message.structure.namespaced_type.name + '_'
 }@
 
-void * create_requester__@(service.structure_type.name)(
+void * create_requester__@(service.namespaced_type.name)(
   void * untyped_participant,
   const char * request_topic_str,
   const char * response_topic_str,
@@ -160,7 +160,7 @@ void * create_requester__@(service.structure_type.name)(
   return requester;
 }
 
-const char * destroy_requester__@(service.structure_type.name)(
+const char * destroy_requester__@(service.namespaced_type.name)(
   void * untyped_requester,
   void (* deallocator)(void *))
 {
@@ -176,7 +176,7 @@ const char * destroy_requester__@(service.structure_type.name)(
   return nullptr;
 }
 
-int64_t send_request__@(service.structure_type.name)(
+int64_t send_request__@(service.namespaced_type.name)(
   void * untyped_requester,
   const void * untyped_ros_request)
 {
@@ -200,7 +200,7 @@ int64_t send_request__@(service.structure_type.name)(
   return sequence_number;
 }
 
-void * create_replier__@(service.structure_type.name)(
+void * create_replier__@(service.namespaced_type.name)(
   void * untyped_participant,
   const char * request_topic_str,
   const char * response_topic_str,
@@ -264,7 +264,7 @@ void * create_replier__@(service.structure_type.name)(
   return replier;
 }
 
-const char * destroy_replier__@(service.structure_type.name)(
+const char * destroy_replier__@(service.namespaced_type.name)(
   void * untyped_replier,
   void (* deallocator)(void *))
 {
@@ -280,7 +280,7 @@ const char * destroy_replier__@(service.structure_type.name)(
   return nullptr;
 }
 
-bool take_request__@(service.structure_type.name)(
+bool take_request__@(service.namespaced_type.name)(
   void * untyped_replier,
   rmw_request_id_t * request_header,
   void * untyped_ros_request)
@@ -320,7 +320,7 @@ bool take_request__@(service.structure_type.name)(
   return true;
 }
 
-bool take_response__@(service.structure_type.name)(
+bool take_response__@(service.namespaced_type.name)(
   void * untyped_requester,
   rmw_request_id_t * request_header,
   void * untyped_ros_response)
@@ -357,7 +357,7 @@ bool take_response__@(service.structure_type.name)(
   return converted;
 }
 
-bool send_response__@(service.structure_type.name)(
+bool send_response__@(service.namespaced_type.name)(
   void * untyped_replier,
   const rmw_request_id_t * request_header,
   const void * untyped_ros_response)
@@ -394,7 +394,7 @@ bool send_response__@(service.structure_type.name)(
 }
 
 void *
-get_request_datawriter__@(service.structure_type.name)(void * untyped_requester)
+get_request_datawriter__@(service.namespaced_type.name)(void * untyped_requester)
 {
   if (!untyped_requester) {
     return NULL;
@@ -408,7 +408,7 @@ get_request_datawriter__@(service.structure_type.name)(void * untyped_requester)
 }
 
 void *
-get_reply_datareader__@(service.structure_type.name)(void * untyped_requester)
+get_reply_datareader__@(service.namespaced_type.name)(void * untyped_requester)
 {
   if (!untyped_requester) {
     return NULL;
@@ -422,7 +422,7 @@ get_reply_datareader__@(service.structure_type.name)(void * untyped_requester)
 }
 
 void *
-get_request_datareader__@(service.structure_type.name)(void * untyped_replier)
+get_request_datareader__@(service.namespaced_type.name)(void * untyped_replier)
 {
   if (!untyped_replier) {
     return NULL;
@@ -436,7 +436,7 @@ get_request_datareader__@(service.structure_type.name)(void * untyped_replier)
 }
 
 void *
-get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier)
+get_reply_datawriter__@(service.namespaced_type.name)(void * untyped_replier)
 {
   if (!untyped_replier) {
     return NULL;
@@ -449,32 +449,32 @@ get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier)
   return replier->get_reply_datawriter();
 }
 
-static service_type_support_callbacks_t _@(service.structure_type.name)__callbacks = {
+static service_type_support_callbacks_t _@(service.namespaced_type.name)__callbacks = {
   "@(package_name)",
-  "@(service.structure_type.name)",
-  &create_requester__@(service.structure_type.name),
-  &destroy_requester__@(service.structure_type.name),
-  &create_replier__@(service.structure_type.name),
-  &destroy_replier__@(service.structure_type.name),
-  &send_request__@(service.structure_type.name),
-  &take_request__@(service.structure_type.name),
-  &send_response__@(service.structure_type.name),
-  &take_response__@(service.structure_type.name),
-  &get_request_datawriter__@(service.structure_type.name),
-  &get_reply_datareader__@(service.structure_type.name),
-  &get_request_datareader__@(service.structure_type.name),
-  &get_reply_datawriter__@(service.structure_type.name),
+  "@(service.namespaced_type.name)",
+  &create_requester__@(service.namespaced_type.name),
+  &destroy_requester__@(service.namespaced_type.name),
+  &create_replier__@(service.namespaced_type.name),
+  &destroy_replier__@(service.namespaced_type.name),
+  &send_request__@(service.namespaced_type.name),
+  &take_request__@(service.namespaced_type.name),
+  &send_response__@(service.namespaced_type.name),
+  &take_response__@(service.namespaced_type.name),
+  &get_request_datawriter__@(service.namespaced_type.name),
+  &get_reply_datareader__@(service.namespaced_type.name),
+  &get_request_datareader__@(service.namespaced_type.name),
+  &get_reply_datawriter__@(service.namespaced_type.name),
 };
 
-static rosidl_service_type_support_t _@(service.structure_type.name)__handle = {
+static rosidl_service_type_support_t _@(service.namespaced_type.name)__handle = {
   rosidl_typesupport_connext_cpp::typesupport_identifier,
-  &_@(service.structure_type.name)__callbacks,
+  &_@(service.namespaced_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
 }  // namespace typesupport_connext_cpp
 
-@[for ns in reversed(service.structure_type.namespaces)]@
+@[for ns in reversed(service.namespaced_type.namespaces)]@
 }  // namespace @(ns)
 
 @[end for]@
@@ -487,7 +487,7 @@ ROSIDL_TYPESUPPORT_CONNEXT_CPP_EXPORT_@(package_name)
 const rosidl_service_type_support_t *
 get_service_type_support_handle<@(__ros_srv_type)>()
 {
-  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.structure_type.name)__handle;
+  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.namespaced_type.name)__handle;
 }
 
 }  // namespace rosidl_typesupport_connext_cpp
@@ -501,9 +501,9 @@ const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
   rosidl_typesupport_connext_cpp,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-  @(service.structure_type.name))()
+  @(service.namespaced_type.name))()
 {
-  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.structure_type.name)__handle;
+  return &@(__ros_srv_pkg_prefix)::typesupport_connext_cpp::_@(service.namespaced_type.name)__handle;
 }
 
 #ifdef __cplusplus
