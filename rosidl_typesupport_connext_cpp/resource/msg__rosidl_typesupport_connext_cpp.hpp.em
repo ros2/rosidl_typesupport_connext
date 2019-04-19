@@ -57,22 +57,22 @@ class DDSDomainParticipant;
 class DDSDataWriter;
 class DDSDataReader;
 
-@[for ns in message.structure.type.namespaces]@
+@[for ns in message.structure.namespaced_type.namespaces]@
 
 namespace @(ns)
 {
 @[end for]@
 @{
-__ros_msg_pkg_prefix = '::'.join(message.structure.type.namespaces)
-__ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.type.name
-__dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.type.name
+__ros_msg_pkg_prefix = '::'.join(message.structure.namespaced_type.namespaces)
+__ros_msg_type = __ros_msg_pkg_prefix + '::' + message.structure.namespaced_type.name
+__dds_msg_type_prefix = __ros_msg_pkg_prefix + '::dds_::' + message.structure.namespaced_type.name
 __dds_msg_type = __dds_msg_type_prefix + '_'
 }@
 namespace typesupport_connext_cpp
 {
 
 DDS_TypeCode *
-get_type_code__@(message.structure.type.name)();
+get_type_code__@(message.structure.namespaced_type.name)();
 
 bool
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
@@ -87,18 +87,18 @@ convert_dds_message_to_ros(
   @(__ros_msg_type) & ros_message);
 
 bool
-to_cdr_stream__@(message.structure.type.name)(
+to_cdr_stream__@(message.structure.namespaced_type.name)(
   const void * untyped_ros_message,
   ConnextStaticCDRStream * cdr_stream);
 
 bool
-to_message__@(message.structure.type.name)(
+to_message__@(message.structure.namespaced_type.name)(
   const ConnextStaticCDRStream * cdr_stream,
   void * untyped_ros_message);
 
 }  // namespace typesupport_connext_cpp
 
-@[for ns in reversed(message.structure.type.namespaces)]@
+@[for ns in reversed(message.structure.namespaced_type.namespaces)]@
 }  // namespace @(ns)
 
 @[end for]@
@@ -113,7 +113,7 @@ const rosidl_message_type_support_t *
   ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
   rosidl_typesupport_connext_cpp,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-  @(message.structure.type.name))();
+  @(message.structure.namespaced_type.name))();
 
 #ifdef __cplusplus
 }

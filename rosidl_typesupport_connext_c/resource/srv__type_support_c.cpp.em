@@ -92,13 +92,13 @@ extern "C"
 #endif
 
 @{
-__ros_srv_pkg_prefix = '::'.join(service.structure_type.namespaces)
-__ros_request_msg_type = __ros_srv_pkg_prefix + '::' + service.request_message.structure.type.name
-__ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message.structure.type.name
-__dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.type.name + '_'
-__dds_response_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.response_message.structure.type.name + '_'
+__ros_srv_pkg_prefix = '::'.join(service.namespaced_type.namespaces)
+__ros_request_msg_type = __ros_srv_pkg_prefix + '::' + service.request_message.structure.namespaced_type.name
+__ros_response_msg_type = __ros_srv_pkg_prefix + '::' + service.response_message.structure.namespaced_type.name
+__dds_request_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.request_message.structure.namespaced_type.name + '_'
+__dds_response_msg_type = __ros_srv_pkg_prefix + '::dds_::' + service.response_message.structure.namespaced_type.name + '_'
 }@
-static void * create_requester__@(service.structure_type.name)(
+static void * create_requester__@(service.namespaced_type.name)(
   void * untyped_participant,
   const char * request_topic_str,
   const char * response_topic_str,
@@ -108,7 +108,7 @@ static void * create_requester__@(service.structure_type.name)(
   void ** untyped_writer,
   void * (*allocator)(size_t))
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::create_requester__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::create_requester__@(service.namespaced_type.name)(
     untyped_participant,
     request_topic_str,
     response_topic_str,
@@ -118,15 +118,15 @@ static void * create_requester__@(service.structure_type.name)(
     untyped_writer,
     allocator);
 }
-static const char * destroy_requester__@(service.structure_type.name)(
+static const char * destroy_requester__@(service.namespaced_type.name)(
   void * untyped_requester,
   void (* deallocator)(void *))
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::destroy_requester__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::destroy_requester__@(service.namespaced_type.name)(
     untyped_requester, deallocator);
 }
 
-static int64_t send_request__@(service.structure_type.name)(
+static int64_t send_request__@(service.namespaced_type.name)(
   void * untyped_requester,
   const void * untyped_ros_request)
 {
@@ -138,8 +138,8 @@ static int64_t send_request__@(service.structure_type.name)(
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
-    @(', '.join(service.request_message.structure.type.namespaces)),
-    @(service.request_message.structure.type.name))();
+    @(', '.join(service.request_message.structure.namespaced_type.namespaces)),
+    @(service.request_message.structure.namespaced_type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_ros_to_dds(
@@ -157,7 +157,7 @@ static int64_t send_request__@(service.structure_type.name)(
   return sequence_number;
 }
 
-static void * create_replier__@(service.structure_type.name)(
+static void * create_replier__@(service.namespaced_type.name)(
   void * untyped_participant,
   const char * request_topic_str,
   const char * response_topic_str,
@@ -167,7 +167,7 @@ static void * create_replier__@(service.structure_type.name)(
   void ** untyped_writer,
   void * (*allocator)(size_t))
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::create_replier__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::create_replier__@(service.namespaced_type.name)(
     untyped_participant,
     request_topic_str,
     response_topic_str,
@@ -178,15 +178,15 @@ static void * create_replier__@(service.structure_type.name)(
     allocator);
 }
 
-static const char * destroy_replier__@(service.structure_type.name)(
+static const char * destroy_replier__@(service.namespaced_type.name)(
   void * untyped_replier,
   void (* deallocator)(void *))
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::destroy_replier__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::destroy_replier__@(service.namespaced_type.name)(
     untyped_replier, deallocator);
 }
 
-static bool take_request__@(service.structure_type.name)(
+static bool take_request__@(service.namespaced_type.name)(
   void * untyped_replier,
   rmw_request_id_t * request_header,
   void * untyped_ros_request)
@@ -213,8 +213,8 @@ static bool take_request__@(service.structure_type.name)(
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
-    @(', '.join(service.request_message.structure.type.namespaces)),
-    @(service.request_message.structure.type.name))();
+    @(', '.join(service.request_message.structure.namespaced_type.namespaces)),
+    @(service.request_message.structure.namespaced_type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_dds_to_ros(
@@ -230,7 +230,7 @@ static bool take_request__@(service.structure_type.name)(
   return true;
 }
 
-static bool take_response__@(service.structure_type.name)(
+static bool take_response__@(service.namespaced_type.name)(
   void * untyped_requester,
   rmw_request_id_t * request_header,
   void * untyped_ros_response)
@@ -262,8 +262,8 @@ static bool take_response__@(service.structure_type.name)(
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
-    @(', '.join(service.response_message.structure.type.namespaces)),
-    @(service.response_message.structure.type.name))();
+    @(', '.join(service.response_message.structure.namespaced_type.namespaces)),
+    @(service.response_message.structure.namespaced_type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_dds_to_ros(
@@ -271,7 +271,7 @@ static bool take_response__@(service.structure_type.name)(
   return converted;
 }
 
-bool send_response__@(service.structure_type.name)(
+bool send_response__@(service.namespaced_type.name)(
   void * untyped_replier,
   const rmw_request_id_t * request_header,
   const void * untyped_ros_response)
@@ -288,8 +288,8 @@ bool send_response__@(service.structure_type.name)(
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
     rosidl_typesupport_connext_c,
-    @(', '.join(service.response_message.structure.type.namespaces)),
-    @(service.response_message.structure.type.name))();
+    @(', '.join(service.response_message.structure.namespaced_type.namespaces)),
+    @(service.response_message.structure.namespaced_type.name))();
   const message_type_support_callbacks_t * callbacks =
     static_cast<const message_type_support_callbacks_t *>(ts->data);
   bool converted = callbacks->convert_ros_to_dds(
@@ -313,53 +313,53 @@ bool send_response__@(service.structure_type.name)(
 }
 
 static void *
-get_request_datawriter__@(service.structure_type.name)(void * untyped_requester)
+get_request_datawriter__@(service.namespaced_type.name)(void * untyped_requester)
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::get_request_datawriter__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::get_request_datawriter__@(service.namespaced_type.name)(
     untyped_requester);
 }
 
 static void *
-get_reply_datareader__@(service.structure_type.name)(void * untyped_requester)
+get_reply_datareader__@(service.namespaced_type.name)(void * untyped_requester)
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::get_reply_datareader__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::get_reply_datareader__@(service.namespaced_type.name)(
     untyped_requester);
 }
 
 static void *
-get_request_datareader__@(service.structure_type.name)(void * untyped_replier)
+get_request_datareader__@(service.namespaced_type.name)(void * untyped_replier)
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::get_request_datareader__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::get_request_datareader__@(service.namespaced_type.name)(
     untyped_replier);
 }
 
 static void *
-get_reply_datawriter__@(service.structure_type.name)(void * untyped_replier)
+get_reply_datawriter__@(service.namespaced_type.name)(void * untyped_replier)
 {
-  return @('::'.join(service.structure_type.namespaces))::typesupport_connext_cpp::get_reply_datawriter__@(service.structure_type.name)(
+  return @('::'.join(service.namespaced_type.namespaces))::typesupport_connext_cpp::get_reply_datawriter__@(service.namespaced_type.name)(
     untyped_replier);
 }
 
-static service_type_support_callbacks_t _@(service.structure_type.name)__callbacks = {
+static service_type_support_callbacks_t _@(service.namespaced_type.name)__callbacks = {
   "@(package_name)",
-  "@(service.structure_type.name)",
-  &create_requester__@(service.structure_type.name),
-  &destroy_requester__@(service.structure_type.name),
-  &create_replier__@(service.structure_type.name),
-  &destroy_replier__@(service.structure_type.name),
-  &send_request__@(service.structure_type.name),
-  &take_request__@(service.structure_type.name),
-  &send_response__@(service.structure_type.name),
-  &take_response__@(service.structure_type.name),
-  &get_request_datawriter__@(service.structure_type.name),
-  &get_reply_datareader__@(service.structure_type.name),
-  &get_request_datareader__@(service.structure_type.name),
-  &get_reply_datawriter__@(service.structure_type.name)
+  "@(service.namespaced_type.name)",
+  &create_requester__@(service.namespaced_type.name),
+  &destroy_requester__@(service.namespaced_type.name),
+  &create_replier__@(service.namespaced_type.name),
+  &destroy_replier__@(service.namespaced_type.name),
+  &send_request__@(service.namespaced_type.name),
+  &take_request__@(service.namespaced_type.name),
+  &send_response__@(service.namespaced_type.name),
+  &take_response__@(service.namespaced_type.name),
+  &get_request_datawriter__@(service.namespaced_type.name),
+  &get_reply_datareader__@(service.namespaced_type.name),
+  &get_request_datareader__@(service.namespaced_type.name),
+  &get_reply_datawriter__@(service.namespaced_type.name)
 };
 
-static rosidl_service_type_support_t _@(service.structure_type.name)__type_support = {
+static rosidl_service_type_support_t _@(service.namespaced_type.name)__type_support = {
   rosidl_typesupport_connext_c__identifier,
-  &_@(service.structure_type.name)__callbacks,
+  &_@(service.namespaced_type.name)__callbacks,
   get_service_typesupport_handle_function,
 };
 
@@ -367,9 +367,9 @@ const rosidl_service_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__SERVICE_SYMBOL_NAME(
   rosidl_typesupport_connext_c,
   @(', '.join([package_name] + list(interface_path.parents[0].parts))),
-  @(service.structure_type.name))()
+  @(service.namespaced_type.name))()
 {
-  return &_@(service.structure_type.name)__type_support;
+  return &_@(service.namespaced_type.name)__type_support;
 }
 
 #if defined(__cplusplus)
