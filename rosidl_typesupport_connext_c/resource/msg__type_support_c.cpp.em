@@ -149,7 +149,7 @@ const rosidl_message_type_support_t *
 
 @# // Make callback functions specific to this message type.
 @{
-__ros_c_msg_type = '__'.join(message.structure.namespaced_type.namespaces + [message.structure.namespaced_type.name])
+__ros_c_msg_type = '__'.join(message.structure.namespaced_type.namespaced_name())
 __dds_cpp_msg_type_prefix = '::'.join(message.structure.namespaced_type.namespaces + ['dds_', message.structure.namespaced_type.name])
 __dds_cpp_msg_type = __dds_cpp_msg_type_prefix + '_'
 }@
@@ -188,9 +188,9 @@ if isinstance(type_, AbstractNestedType):
     type_ = type_.value_type
 }@
 @[  if isinstance(type_, NamespacedType)]@
-    const message_type_support_callbacks_t * @('__'.join(type_.namespaces + [type_.name]))__callbacks =
+    const message_type_support_callbacks_t * @('__'.join(type_.namespaced_name()))__callbacks =
       static_cast<const message_type_support_callbacks_t *>(
-      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_connext_c, @(', '.join(type_.namespaces)), @(type_.name)
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_connext_c, @(', '.join(type_.namespaced_name()))
       )()->data);
 @[  end if]@
 @[  if isinstance(member.type, AbstractNestedType)]@
