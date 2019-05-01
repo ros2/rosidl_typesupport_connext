@@ -135,7 +135,7 @@ convert_ros_message_to_dds(
       dds_message.@(member.name)_[static_cast<DDS_Long>(i)] =
         DDS_String_dup(ros_message.@(member.name)[i].c_str());
 @[    elif isinstance(member.type.value_type, AbstractWString)]@
-      DDS_Wstring * wstr = rosidl_typesupport_connext_cpp::create_wstring_from_u16string(ros_message.@(member.name)[i]);
+      DDS_Wchar * wstr = rosidl_typesupport_connext_cpp::create_wstring_from_u16string(ros_message.@(member.name)[i]);
       if (NULL == wstr) {
         fprintf(stderr, "failed to create wstring from u16string\n");
         return false;
@@ -161,7 +161,7 @@ convert_ros_message_to_dds(
   dds_message.@(member.name)_ =
     DDS_String_dup(ros_message.@(member.name).c_str());
 @[  elif isinstance(member.type, AbstractWString)]@
-  DDS_Wstring * wstr = rosidl_typesupport_connext_cpp::create_wstring_from_u16string(ros_message.@(member.name));
+  DDS_Wchar * wstr = rosidl_typesupport_connext_cpp::create_wstring_from_u16string(ros_message.@(member.name));
   if (NULL == wstr) {
     fprintf(stderr, "failed to create wstring from u16string\n");
     return false;
