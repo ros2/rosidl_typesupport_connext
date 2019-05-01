@@ -32,14 +32,19 @@ DDS_Wchar * create_wstring_from_u16string(const std::u16string & u16str)
   return wstr;
 }
 
-void wstring_to_u16string(const DDS_Wchar * wstr, std::u16string & u16str)
+bool wstring_to_u16string(const DDS_Wchar * wstr, std::u16string & u16str)
 {
   size_t size = static_cast<size_t>(DDS_Wstring_length(wstr));
-  u16str.resize(size);
+  try {
+    u16str.resize(size);
+  } catch (...) {
+    return false;
+  }
   for(size_t i = 0; i < size; ++i) {
     u16str[i] = static_cast<char16_t>(wstr[i]);
   }
   u16str[size] = u'\0';
+  return true;
 }
 
 }  // namespace rosidl_typesupport_connext_cpp

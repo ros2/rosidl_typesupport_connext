@@ -29,7 +29,7 @@ DDS_Wchar * create_wstring_from_u16string(
   const rosidl_generator_c__U16String & u16str);
 
 ROSIDL_TYPESUPPORT_CONNEXT_C_PUBLIC
-void wstring_to_u16string(
+bool wstring_to_u16string(
   const DDS_Wchar * wstr, rosidl_generator_c__U16String & u16str);
 
 }  // namespace rosidl_typesupport_connext_c

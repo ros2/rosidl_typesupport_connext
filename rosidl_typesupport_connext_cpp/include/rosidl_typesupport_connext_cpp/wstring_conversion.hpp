@@ -30,7 +30,7 @@ DDS_Wchar * create_wstring_from_u16string(
   const std::u16string & u16str);
 
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC
-void wstring_to_u16string(
+bool wstring_to_u16string(
   const DDS_Wchar * wstr, std::u16string & u16str);
 
 }  // namespace rosidl_typesupport_connext_cpp

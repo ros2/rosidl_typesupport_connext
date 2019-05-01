@@ -33,13 +33,17 @@ DDS_Wchar * create_wstring_from_u16string(const rosidl_generator_c__U16String & 
   return wstr;
 }
 
-void wstring_to_u16string(const DDS_Wchar * wstr, rosidl_generator_c__U16String & u16str)
+bool wstring_to_u16string(const DDS_Wchar * wstr, rosidl_generator_c__U16String & u16str)
 {
   size_t size = static_cast<size_t>(DDS_Wstring_length(wstr));
-  rosidl_generator_c__U16String__resize(&u16str, size);
+  bool succeeded rosidl_generator_c__U16String__resize(&u16str, size);
+  if (!succeeded) {
+    return false;
+  }
   for(size_t i = 0; i < size; ++i) {
     u16str.data[i] = static_cast<char16_t>(wstr[i]);
   }
+  return true;
 }
 
 }  // namespace rosidl_typesupport_connext_c
