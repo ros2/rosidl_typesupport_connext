@@ -254,6 +254,8 @@ if(BUILD_TESTING AND rosidl_generate_interfaces_ADD_LINTER_TESTS)
       TESTNAME "cpplint_rosidl_typesupport_connext_c"
       # the generated code might contain longer lines for templated types
       MAX_LINE_LENGTH 999
+      # the generated code might contain long functions without comments
+      FILTERS "-readability/fn_size"
       ROOT "${_cpplint_root}"
       ${_generated_files})
 
