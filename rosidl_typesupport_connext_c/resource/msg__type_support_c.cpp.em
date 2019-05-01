@@ -249,6 +249,10 @@ if isinstance(type_, AbstractNestedType):
         return false;
       }
       DDS_Wchar * wstr = rosidl_typesupport_connext_c::create_wstring_from_u16string(*str);
+      if (NULL == wstr) {
+        fprintf(stderr, "failed to create wstring from u16string\n");
+        return false;
+      }
       dds_message->@(member.name)_[static_cast<DDS_Long>(i)] = wstr;
 @[    elif isinstance(type_, BasicType)]@
 @[      if type_.typename == 'boolean']@
@@ -286,6 +290,10 @@ if isinstance(type_, AbstractNestedType):
       return false;
     }
     DDS_Wchar * wstr = rosidl_typesupport_connext_c::create_wstring_from_u16string(*str);
+    if (NULL == wstr) {
+      fprintf(stderr, "failed to create wstring from u16string\n");
+      return false;
+    }
     dds_message->@(member.name)_ = wstr;
 @[  elif isinstance(member.type, BasicType)]@
     dds_message->@(member.name)_ = ros_message->@(member.name);

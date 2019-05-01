@@ -22,6 +22,9 @@ namespace rosidl_typesupport_connext_cpp
 DDS_Wchar * create_wstring_from_u16string(const std::u16string & u16str)
 {
   DDS_Wchar * wstr = DDS_Wstring_alloc(u16str.size());
+  if (NULL == wstr) {
+    return wstr;
+  }
   for(size_t i = 0; i < u16str.size(); ++i) {
     wstr[i] = static_cast<DDS_Wchar>(u16str[i]);
   }
