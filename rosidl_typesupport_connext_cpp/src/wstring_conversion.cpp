@@ -25,7 +25,7 @@ DDS_Wchar * create_wstring_from_u16string(const std::u16string & u16str)
   if (NULL == wstr) {
     return wstr;
   }
-  for(size_t i = 0; i < u16str.size(); ++i) {
+  for (size_t i = 0; i < u16str.size(); ++i) {
     wstr[i] = static_cast<DDS_Wchar>(u16str[i]);
   }
   wstr[u16str.size()] = static_cast<DDS_Wchar>(u'\0');
@@ -40,7 +40,7 @@ bool wstring_to_u16string(const DDS_Wchar * wstr, std::u16string & u16str)
   } catch (...) {
     return false;
   }
-  for(size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < size; ++i) {
     u16str[i] = static_cast<char16_t>(wstr[i]);
   }
   u16str[size] = u'\0';
