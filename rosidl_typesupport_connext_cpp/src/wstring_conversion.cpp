@@ -14,7 +14,15 @@
 
 #include <rosidl_typesupport_connext_cpp/wstring_conversion.hpp>
 
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-register"
+# pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
+#endif
 #include "ndds/ndds_cpp.h"
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
 
 namespace rosidl_typesupport_connext_cpp
 {
