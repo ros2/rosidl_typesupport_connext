@@ -36,7 +36,7 @@ DDS_Wchar * create_wstring_from_u16string(const rosidl_generator_c__U16String & 
 bool wstring_to_u16string(const DDS_Wchar * wstr, rosidl_generator_c__U16String & u16str)
 {
   size_t size = static_cast<size_t>(DDS_Wstring_length(wstr));
-  bool succeeded rosidl_generator_c__U16String__resize(&u16str, size);
+  bool succeeded = rosidl_generator_c__U16String__resize(&u16str, size);
   if (!succeeded) {
     return false;
   }
