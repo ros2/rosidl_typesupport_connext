@@ -50,7 +50,9 @@ ament_export_include_directories(include)
 
 ament_python_install_package(${PROJECT_NAME})
 
-add_library(${PROJECT_NAME} SHARED src/identifier.cpp)
+add_library(${PROJECT_NAME} SHARED
+  src/identifier.cpp
+  src/wstring_conversion.cpp)
 if(WIN32)
   target_compile_definitions(${PROJECT_NAME}
     PRIVATE "ROSIDL_TYPESUPPORT_CONNEXT_CPP_BUILDING_DLL")
@@ -59,6 +61,9 @@ target_include_directories(${PROJECT_NAME}
   PUBLIC
   include
 )
+ament_target_dependencies(
+  ${PROJECT_NAME}
+  "Connext")
 ament_export_libraries(${PROJECT_NAME})
 
 ament_index_register_resource("rosidl_typesupport_cpp")
