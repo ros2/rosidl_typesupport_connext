@@ -469,7 +469,7 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
     return false;
   }
   cdr_stream->buffer_length = expected_length;
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -493,7 +493,8 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
 static bool
 _@(message.structure.namespaced_type.name)__to_message(
   const rcutils_uint8_array_t * cdr_stream,
-  void * untyped_ros_message)
+  void * untyped_ros_message,
+  void * untyped_dds_message)
 {
   if (!cdr_stream) {
     return false;
@@ -502,10 +503,14 @@ _@(message.structure.namespaced_type.name)__to_message(
     return false;
   }
 
-  @(__dds_cpp_msg_type) * dds_message =
-    @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+  @(__dds_cpp_msg_type) * dds_message;
+  if( untyped_ros_message){
+    dds_message = static_cast<@(__dds_cpp_msg_type) *>(untyped_dds_message);
+  } else {
+    dds_message = @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+  }
 
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -518,8 +523,11 @@ _@(message.structure.namespaced_type.name)__to_message(
     return false;
   }
   bool success = _@(message.structure.namespaced_type.name)__convert_dds_to_ros(dds_message, untyped_ros_message);
-  if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
-    return false;
+
+  if(!untyped_dds_message){
+    if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
+      return false;
+    }
   }
   return success;
 }
