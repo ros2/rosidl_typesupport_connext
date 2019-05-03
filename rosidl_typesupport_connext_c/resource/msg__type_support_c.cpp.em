@@ -519,7 +519,7 @@ _@(message.structure.namespaced_type.name)__to_message(
 
 @# // Collect the callback functions and provide a function to get the type support struct.
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
-  "@(package_name)",  // package_name
+  "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",  // message_namespace
   "@(message.structure.namespaced_type.name)",  // message_name
   _@(message.structure.namespaced_type.name)__get_type_code,  // get_type_code
   _@(message.structure.namespaced_type.name)__convert_ros_to_dds,  // convert_ros_to_dds

@@ -358,7 +358,7 @@ to_message__@(message.structure.namespaced_type.name)(
 }
 
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
-  "@(package_name)",
+  "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(message.structure.namespaced_type.name)",
   &get_type_code__@(message.structure.namespaced_type.name),
   nullptr,

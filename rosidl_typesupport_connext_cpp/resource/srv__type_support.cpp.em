@@ -450,7 +450,7 @@ get_reply_datawriter__@(service.namespaced_type.name)(void * untyped_replier)
 }
 
 static service_type_support_callbacks_t _@(service.namespaced_type.name)__callbacks = {
-  "@(package_name)",
+  "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",
   "@(service.namespaced_type.name)",
   &create_requester__@(service.namespaced_type.name),
   &destroy_requester__@(service.namespaced_type.name),
