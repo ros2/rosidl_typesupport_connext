@@ -24,7 +24,7 @@ struct DDS_TypeCode;
 
 typedef struct message_type_support_callbacks_t
 {
-  const char * package_name;
+  const char * message_namespace;
   const char * message_name;
   // Function to register type with given dds_participant
   DDS_TypeCode * (*get_type_code)(void);
