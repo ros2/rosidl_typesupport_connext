@@ -112,7 +112,7 @@ function(_find_connext_libraries var library_names basepath)
     # If this is Darwin, only accept Darwin
     if(APPLE)
       set(match FALSE)
-      string(REGEX MATCH ".*x64Darwin[1-9][0-9]clang[0-9]+.[0-9]" _found "${library}")
+      string(REGEX MATCH "x64Darwin[1-9][0-9]clang[0-9]+.[0-9]" _found "${library}")
       if(_found)
         set(match TRUE)
       endif()
