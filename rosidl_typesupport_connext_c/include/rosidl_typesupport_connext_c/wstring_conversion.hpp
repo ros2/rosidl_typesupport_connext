@@ -15,11 +15,17 @@
 #ifndef ROSIDL_TYPESUPPORT_CONNEXT_C__WSTRING_CONVERSION_HPP_
 #define ROSIDL_TYPESUPPORT_CONNEXT_C__WSTRING_CONVERSION_HPP_
 
+#include "ndds/ndds_version.h"
+
 #include "rosidl_generator_c/u16string.h"
 #include "rosidl_typesupport_connext_c/visibility_control.h"
 
 // forward declare DDS_Wchar
+#if RTI_DDS_VERSION_MAJOR < 6
 typedef unsigned int DDS_Wchar;
+#else
+typedef unsigned short DDS_Wchar;  // NOLINT
+#endif
 
 namespace rosidl_typesupport_connext_c
 {
