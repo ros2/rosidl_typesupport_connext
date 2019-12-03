@@ -70,9 +70,9 @@ def generate_dds_connext_cpp(
             try:
                 subprocess.check_call(cmd)
             except subprocess.CalledProcessError as e:
-                # it seems that the RTI code generator sometimes fails
-                # when running in highly conconcurrent environments
-                # therefore we will just retry the invocation
+                # HACK(dirk-thomas) it seems that the RTI code generator
+                # sometimes fails when running in highly conconcurrent
+                # environments therefore we will just retry the invocation
                 print("'%s' failed for '%s/%s' with rc %d" %
                       (idl_pp, pkg_name, msg_name, e.returncode),
                       file=sys.stderr)
