@@ -67,7 +67,25 @@ def generate_dds_connext_cpp(
         count = 1
         max_count = 5
         while True:
-            subprocess.check_call(cmd)
+            try:
+                subprocess.check_call(cmd)
+            except subprocess.CalledProcessError as e:
+                # HACK(dirk-thomas) it seems that the RTI code generator
+                # sometimes fails when running in highly conconcurrent
+                # environments using the server mode
+                # therefore we will retry in non-server mode
+                print("'%s' failed for '%s/%s' with rc %d" %
+                      (idl_pp, pkg_name, msg_name, e.returncode),
+                      file=sys.stderr)
+                dirname, basename = os.path.split(cmd[0])
+                root, ext = os.path.splitext(basename)
+                server_suffix = '_server'
+                if not root.endswith(server_suffix):
+                    raise
+                print('Running non-server code generator instead...',
+                      file=sys.stderr)
+                cmd[0] = os.path.join(dirname, root[:-len(server_suffix)] + ext)
+                subprocess.check_call(cmd)
 
             # fail safe if the generator does not work as expected
             any_missing = False
