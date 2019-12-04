@@ -2,6 +2,9 @@
 Changelog for package rosidl_typesupport_connext_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.8.2 (2019-10-23)
 ------------------
 * Connext 6 compatibility (`#37 <https://github.com/ros2/rosidl_typesupport_connext/issues/37>`_)

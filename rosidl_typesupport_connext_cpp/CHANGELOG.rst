@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* retry rtiddsgen(_server) invocation if it fails with a return code (`#38 <https://github.com/ros2/rosidl_typesupport_connext/issues/38>`_)
+* Contributors: Dirk Thomas
+
 0.8.2 (2019-10-23)
 ------------------
 * Connext 6 compatibility (`#37 <https://github.com/ros2/rosidl_typesupport_connext/issues/37>`_)
