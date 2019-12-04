@@ -2,6 +2,9 @@
 Changelog for package rosidl_typesupport_connext_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.8.3 (2019-12-04)
 ------------------
 

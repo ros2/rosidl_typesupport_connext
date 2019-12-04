@@ -2,6 +2,12 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* try fallback to non-server mode if server mode failed (`#39 <https://github.com/ros2/rosidl_typesupport_connext/issues/39>`_)
+* Revert "retry rtiddsgen(_server) invocation if it fails with a return code (`#38 <https://github.com/ros2/rosidl_typesupport_connext/issues/38>`_)"
+* Contributors: Dirk Thomas
+
 0.8.3 (2019-12-04)
 ------------------
 * retry rtiddsgen(_server) invocation if it fails with a return code (`#38 <https://github.com/ros2/rosidl_typesupport_connext/issues/38>`_)
