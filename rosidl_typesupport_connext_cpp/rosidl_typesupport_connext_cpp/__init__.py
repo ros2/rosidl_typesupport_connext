@@ -67,31 +67,19 @@ def generate_dds_connext_cpp(
         count = 1
         max_count = 5
         while True:
-            try:
-                subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as e:
-                # HACK(dirk-thomas) it seems that the RTI code generator
-                # sometimes fails when running in highly conconcurrent
-                # environments therefore we will just retry the invocation
-                print("'%s' failed for '%s/%s' with rc %d" %
-                      (idl_pp, pkg_name, msg_name, e.returncode),
-                      file=sys.stderr)
-                # just another double check since frequently the RTI code
-                # generator reports that the input .idl file is missing
-                assert os.path.exists(idl_file), \
-                    'Could not find IDL file: ' + idl_file
-            else:
-                # fail safe if the generator does not work as expected
-                any_missing = False
-                for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
-                    filename = os.path.join(output_path, msg_name + suffix)
-                    if not os.path.exists(filename):
-                        any_missing = True
-                        break
-                if not any_missing:
+            subprocess.check_call(cmd)
+
+            # fail safe if the generator does not work as expected
+            any_missing = False
+            for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
+                filename = os.path.join(output_path, msg_name + suffix)
+                if not os.path.exists(filename):
+                    any_missing = True
                     break
-                print("'%s' failed to generate the expected files for '%s/%s'" %
-                      (idl_pp, pkg_name, msg_name), file=sys.stderr)
+            if not any_missing:
+                break
+            print("'%s' failed to generate the expected files for '%s/%s'" %
+                  (idl_pp, pkg_name, msg_name), file=sys.stderr)
             if count < max_count:
                 count += 1
                 print('Running code generator again (retry %d of %d)...' %
