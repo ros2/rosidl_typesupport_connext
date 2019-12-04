@@ -72,26 +72,32 @@ def generate_dds_connext_cpp(
             except subprocess.CalledProcessError as e:
                 # HACK(dirk-thomas) it seems that the RTI code generator
                 # sometimes fails when running in highly conconcurrent
-                # environments therefore we will just retry the invocation
+                # environments using the server mode
+                # therefore we will retry in non-server mode
                 print("'%s' failed for '%s/%s' with rc %d" %
                       (idl_pp, pkg_name, msg_name, e.returncode),
                       file=sys.stderr)
-                # just another double check since frequently the RTI code
-                # generator reports that the input .idl file is missing
-                assert os.path.exists(idl_file), \
-                    'Could not find IDL file: ' + idl_file
-            else:
-                # fail safe if the generator does not work as expected
-                any_missing = False
-                for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
-                    filename = os.path.join(output_path, msg_name + suffix)
-                    if not os.path.exists(filename):
-                        any_missing = True
-                        break
-                if not any_missing:
+                dirname, basename = os.path.split(cmd[0])
+                root, ext = os.path.splitext(basename)
+                server_suffix = '_server'
+                if not root.endswith(server_suffix):
+                    raise
+                print('Running non-server code generator instead...',
+                      file=sys.stderr)
+                cmd[0] = os.path.join(dirname, root[:-len(server_suffix)] + ext)
+                subprocess.check_call(cmd)
+
+            # fail safe if the generator does not work as expected
+            any_missing = False
+            for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
+                filename = os.path.join(output_path, msg_name + suffix)
+                if not os.path.exists(filename):
+                    any_missing = True
                     break
-                print("'%s' failed to generate the expected files for '%s/%s'" %
-                      (idl_pp, pkg_name, msg_name), file=sys.stderr)
+            if not any_missing:
+                break
+            print("'%s' failed to generate the expected files for '%s/%s'" %
+                  (idl_pp, pkg_name, msg_name), file=sys.stderr)
             if count < max_count:
                 count += 1
                 print('Running code generator again (retry %d of %d)...' %
