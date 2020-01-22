@@ -93,16 +93,6 @@ for member in message.structure.members:
         includes.setdefault('rosidl_generator_c/u16string_functions.h', []).append(member.name)
     if isinstance(type_, NamespacedType):
         include_prefix = idl_structure_type_to_c_include_prefix(type_)
-        if include_prefix.endswith('__request'):
-            include_prefix = include_prefix[:-9]
-        elif include_prefix.endswith('__response'):
-            include_prefix = include_prefix[:-10]
-        if include_prefix.endswith('__goal'):
-            include_prefix = include_prefix[:-6]
-        elif include_prefix.endswith('__result'):
-            include_prefix = include_prefix[:-8]
-        elif include_prefix.endswith('__feedback'):
-            include_prefix = include_prefix[:-10]
         includes.setdefault(include_prefix + '__struct.h', []).append(member.name)
         includes.setdefault(include_prefix + '__functions.h', []).append(member.name)
 }@
