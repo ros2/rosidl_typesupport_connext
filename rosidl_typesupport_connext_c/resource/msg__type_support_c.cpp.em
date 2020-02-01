@@ -189,7 +189,7 @@ if isinstance(type_, AbstractNestedType):
     size_t size = @(member.type.size);
 @[    else]@
     size_t size = ros_message->@(member.name).size;
-    if (size > (std::numeric_limits<DDS_Long>::max)()) {
+    if (size > (std::numeric_limits<size_t>::max)()) {
       fprintf(stderr, "array size exceeds maximum DDS sequence size\n");
       return false;
     }
