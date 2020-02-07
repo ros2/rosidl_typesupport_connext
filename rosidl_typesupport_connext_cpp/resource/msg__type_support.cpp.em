@@ -364,6 +364,9 @@ static message_type_support_callbacks_t _@(message.structure.namespaced_type.nam
   nullptr,
   nullptr,
   &to_cdr_stream__@(message.structure.namespaced_type.name),
+  nullptr,
+  nullptr,
+  nullptr,
   &to_message__@(message.structure.namespaced_type.name)
 };
 

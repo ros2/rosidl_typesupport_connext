@@ -9,6 +9,8 @@ from rosidl_parser.definition import AbstractSequence
 from rosidl_parser.definition import AbstractString
 from rosidl_parser.definition import AbstractWString
 from rosidl_parser.definition import Array
+from rosidl_parser.definition import BoundedSequence
+from rosidl_parser.definition import UnboundedSequence
 from rosidl_parser.definition import BasicType
 from rosidl_parser.definition import BoundedSequence
 from rosidl_parser.definition import NamespacedType
@@ -17,6 +19,7 @@ include_base = '/'.join(include_parts)
 
 cpp_include_prefix = interface_path.stem
 c_include_prefix = convert_camel_case_to_lower_case_underscore(cpp_include_prefix)
+message_typename = idl_structure_type_to_c_typename(message.structure.type)
 
 header_files = [
     include_base + '/' + c_include_prefix + '__rosidl_typesupport_connext_c.h',
@@ -27,6 +30,9 @@ header_files = [
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
     include_base + '/' + c_include_prefix + '__struct.h',
     include_base + '/' + c_include_prefix + '__functions.h',
+    include_base + '/' + c_include_prefix + '__bounds.h',
+    'rmw/types.h',
+    'rmw/impl/cpp/macros.hpp'
 ]
 
 dds_specific_header_files = [
@@ -454,7 +460,7 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
     return false;
   }
   cdr_stream->buffer_length = expected_length;
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -478,7 +484,8 @@ _@(message.structure.namespaced_type.name)__to_cdr_stream(
 static bool
 _@(message.structure.namespaced_type.name)__to_message(
   const rcutils_uint8_array_t * cdr_stream,
-  void * untyped_ros_message)
+  void * untyped_ros_message,
+  void * untyped_dds_message)
 {
   if (!cdr_stream) {
     return false;
@@ -487,9 +494,14 @@ _@(message.structure.namespaced_type.name)__to_message(
     return false;
   }
 
-  @(__dds_cpp_msg_type) * dds_message =
-    @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
+  @(__dds_cpp_msg_type) * dds_message;
+  if( untyped_ros_message){
+    dds_message = static_cast<@(__dds_cpp_msg_type) *>(untyped_dds_message);
+  } else {
+    dds_message = @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+  }
+
+  if (cdr_stream->buffer_length > MAX_UINT_SIZE) {
     fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
@@ -502,12 +514,136 @@ _@(message.structure.namespaced_type.name)__to_message(
     return false;
   }
   bool success = _@(message.structure.namespaced_type.name)__convert_dds_to_ros(dds_message, untyped_ros_message);
-  if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
-    return false;
+
+  if(!untyped_dds_message){
+    if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
+      return false;
+    }
   }
   return success;
 }
 
+static rmw_ret_t _@(message.structure.namespaced_type.name)__get_serialized_length(void * dds_msg, unsigned int * expected_length)
+{
+@(__dds_cpp_msg_type) * dds_message = static_cast<@(__dds_cpp_msg_type) *>(dds_msg);
+
+ // call the serialize function for the first time to get the expected length of the message
+ if (@(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
+     NULL, expected_length, dds_message) != RTI_TRUE)
+ {
+  RMW_SET_ERROR_MSG("failed to call @(__dds_cpp_msg_type_prefix)_Plugin_serialize_to_cdr_buffer()");
+  return RMW_RET_ERROR;
+ }
+
+ return RMW_RET_OK;
+}
+
+static rmw_ret_t _@(message.structure.namespaced_type.name)__create_message(void ** msg, const void * bounds)
+{
+
+@(__dds_cpp_msg_type) * dds_message =
+  @(__dds_cpp_msg_type_prefix)_TypeSupport::create_data();
+
+const @(message_typename)__bounds * bounds_ = static_cast<const @(message_typename)__bounds *>(bounds);
+
+@[for member in message.structure.members]@
+ // Member name: @(member.name)
+@{
+type_ = member.type
+if isinstance(type_, NestedType):
+ type_ = type_.basetype
+}@
+@[  if isinstance(member.type, UnboundedSequence)]@
+@[   if isinstance(type_, BasicType)]@
+@[    if type_.type == "bool"]@
+DDS_BooleanSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length);
+@[    elif type_.type == "byte"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "char"]@
+DDS_CharSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "float32"]@
+DDS_FloatSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "float64"]@
+DDS_DoubleSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int8"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint8"]@
+DDS_OctetSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int16"]@
+DDS_ShortSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint16"]@
+DDS_UnsignedShortSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int32"]@
+DDS_LongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint32"]@
+DDS_UnsignedLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "int64"]@
+DDS_LongLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    elif type_.type == "uint64"]@
+DDS_UnsignedLongLongSeq_ensure_length(&dds_message->@(member.name)_,
+bounds_->@(member.name)__length,
+bounds_->@(member.name)__length );
+@[    end if]@
+@[   elif isinstance(type_, UnboundedSequence)]@
+const rosidl_message_type_support_t * ts =
+ ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+ rosidl_typesupport_connext_c,
+ @(', '.join(member.type.namespaces)),
+ @(member.type.name))();
+const message_type_support_callbacks_t * callbacks =
+ static_cast<const message_type_support_callbacks_t *>(ts->data);
+size_t size = @(_type.size);
+for (DDS_Long i = 0; i < static_cast<DDS_Long>(size); ++i) {
+ callbacks->create_message(&dds_message->@(member.name).data[i], );
+}
+@[   end if]@
+@[  end if]@
+@[end for]@
+ *msg = (void *) dds_message;
+
+ return RMW_RET_OK;
+}
+
+static rmw_ret_t _@(message.structure.namespaced_type.name)__delete_message(void * msg)
+{
+
+ if(!msg){
+  RMW_SET_ERROR_MSG("msg cannot be null");
+  return RMW_RET_ERROR;
+ }
+
+  @(__dds_cpp_msg_type)* dds_message = static_cast<@(__dds_cpp_msg_type) *>(msg);
+ if (@(__dds_cpp_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
+  RMW_SET_ERROR_MSG("Error while deleting msg");
+  return RMW_RET_ERROR;
+ }
+ return RMW_RET_OK;
+
+}
 @# // Collect the callback functions and provide a function to get the type support struct.
 static message_type_support_callbacks_t _@(message.structure.namespaced_type.name)__callbacks = {
   "@('::'.join([package_name] + list(interface_path.parents[0].parts)))",  // message_namespace
@@ -516,6 +652,9 @@ static message_type_support_callbacks_t _@(message.structure.namespaced_type.nam
   _@(message.structure.namespaced_type.name)__convert_ros_to_dds,  // convert_ros_to_dds
   _@(message.structure.namespaced_type.name)__convert_dds_to_ros,  // convert_dds_to_ros
   _@(message.structure.namespaced_type.name)__to_cdr_stream,  // to_cdr_stream
+  _@(message.structure.type.name)__get_serialized_length,  // get serialized length
+  _@(message.structure.type.name)__create_message,  // create message
+  _@(message.structure.type.name)__delete_message,  // delete message
   _@(message.structure.namespaced_type.name)__to_message  // to_message
 };
 
