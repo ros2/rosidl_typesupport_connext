@@ -16,7 +16,9 @@
 
 #include <ndds/connext_cpp/connext_cpp_requester_details.h>
 
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#if __GNUC__ >= 9
+# pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #pragma GCC diagnostic ignored "-Wuninitialized"
 
 int main(int, char **)
