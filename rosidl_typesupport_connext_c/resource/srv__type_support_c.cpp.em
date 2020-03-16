@@ -33,6 +33,7 @@ dds_specific_header_files = [
 
 #ifndef _WIN32
 # pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wclass-memaccess"
 # pragma GCC diagnostic ignored "-Wunused-parameter"
 # ifdef __clang__
 #  pragma clang diagnostic ignored "-Wdeprecated-register"

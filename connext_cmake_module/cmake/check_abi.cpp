@@ -16,6 +16,7 @@
 
 #include <ndds/connext_cpp/connext_cpp_requester_details.h>
 
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
 #pragma GCC diagnostic ignored "-Wuninitialized"
 
 int main(int, char **)
