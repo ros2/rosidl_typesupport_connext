@@ -7,6 +7,8 @@
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>Apache License 2.0</license>
 
+  <build_depend>rosidl_runtime_c</build_depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>connext_cmake_module</buildtool_depend>
   <buildtool_depend>rosidl_cmake</buildtool_depend>
@@ -21,8 +23,6 @@
   <buildtool_export_depend>rosidl_typesupport_connext_cpp</buildtool_export_depend>
 
   <build_export_depend>rmw</build_export_depend>
-
-  <build_depend>rosidl_runtime_c</build_depend>
 
   <exec_depend>rosidl_parser</exec_depend>
 
