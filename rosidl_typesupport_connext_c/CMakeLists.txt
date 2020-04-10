@@ -42,12 +42,13 @@ if(NOT Connext_FOUND OR CONNEXT_STATIC_DISABLE)
 endif()
 
 find_package(ament_cmake_python REQUIRED)
+find_package(rosidl_runtime_c REQUIRED)
 find_package(rosidl_typesupport_connext_cpp REQUIRED)
 
 ament_export_dependencies(rcutils)
 ament_export_dependencies(rmw)
 ament_export_dependencies(rosidl_cmake)
-ament_export_dependencies(rosidl_generator_c)
+ament_export_dependencies(rosidl_runtime_c)
 ament_export_dependencies(rosidl_generator_dds_idl)
 ament_export_dependencies(rosidl_typesupport_connext_cpp)
 ament_export_include_directories(include)
@@ -65,6 +66,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 ament_target_dependencies(
   ${PROJECT_NAME}
   "Connext"
+  "rosidl_runtime_c"
   "rosidl_typesupport_connext_cpp")
 ament_export_libraries(${PROJECT_NAME})
 
