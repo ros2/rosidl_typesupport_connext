@@ -26,12 +26,12 @@
 #ifndef _WIN32
 # pragma GCC diagnostic pop
 #endif
-#include "rosidl_generator_c/u16string_functions.h"
+#include "rosidl_runtime_c/u16string_functions.h"
 
 namespace rosidl_typesupport_connext_c
 {
 
-DDS_Wchar * create_wstring_from_u16string(const rosidl_generator_c__U16String & u16str)
+DDS_Wchar * create_wstring_from_u16string(const rosidl_runtime_c__U16String & u16str)
 {
   DDS_Wchar * wstr = DDS_Wstring_alloc(static_cast<DDS_Long>(u16str.size));
   if (NULL == wstr) {
@@ -44,10 +44,10 @@ DDS_Wchar * create_wstring_from_u16string(const rosidl_generator_c__U16String & 
   return wstr;
 }
 
-bool wstring_to_u16string(const DDS_Wchar * wstr, rosidl_generator_c__U16String & u16str)
+bool wstring_to_u16string(const DDS_Wchar * wstr, rosidl_runtime_c__U16String & u16str)
 {
   size_t size = static_cast<size_t>(DDS_Wstring_length(wstr));
-  bool succeeded = rosidl_generator_c__U16String__resize(&u16str, size);
+  bool succeeded = rosidl_runtime_c__U16String__resize(&u16str, size);
   if (!succeeded) {
     return false;
   }

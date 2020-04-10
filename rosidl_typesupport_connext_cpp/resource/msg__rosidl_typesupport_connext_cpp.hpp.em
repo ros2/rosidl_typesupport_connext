@@ -5,7 +5,7 @@ include_parts = [package_name] + list(interface_path.parents[0].parts)
 include_base = '/'.join(include_parts)
 header_filename = convert_camel_case_to_lower_case_underscore(interface_path.stem)
 header_files = [
-    'rosidl_generator_c/message_type_support_struct.h',
+    'rosidl_runtime_c/message_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
     package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h',
     include_base + '/' + header_filename + '__struct.hpp'
