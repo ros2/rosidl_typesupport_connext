@@ -17,7 +17,7 @@
 
 #include "rcutils/types/uint8_array.h"
 
-#include "rosidl_generator_c/message_type_support_struct.h"
+#include "rosidl_runtime_c/message_type_support_struct.h"
 
 // forward declare DDS_TypeCode
 struct DDS_TypeCode;
