@@ -13,7 +13,7 @@ header_files = [
     'rosidl_typesupport_connext_cpp/identifier.hpp',
     'rosidl_typesupport_connext_cpp/service_type_support.h',
     'rosidl_typesupport_connext_cpp/service_type_support_decl.hpp',
-    include_base + '/' + c_include_prefix + '__struct.hpp',
+    include_base + '/detail/' + c_include_prefix + '__struct.hpp',
     include_base + '/dds_connext/' + cpp_include_prefix + '_Support.h',
     include_base + '/dds_connext/' + cpp_include_prefix + '_Plugin.h'
 ]

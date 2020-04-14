@@ -25,8 +25,8 @@ header_files = [
     'rosidl_typesupport_connext_c/wstring_conversion.hpp',
     'rosidl_typesupport_connext_cpp/message_type_support.h',
     package_name + '/msg/rosidl_typesupport_connext_c__visibility_control.h',
-    include_base + '/' + c_include_prefix + '__struct.h',
-    include_base + '/' + c_include_prefix + '__functions.h',
+    include_base + '/detail/' + c_include_prefix + '__struct.h',
+    include_base + '/detail/' + c_include_prefix + '__functions.h',
 ]
 
 dds_specific_header_files = [
@@ -92,7 +92,7 @@ for member in message.structure.members:
         includes.setdefault('rosidl_runtime_c/u16string.h', []).append(member.name)
         includes.setdefault('rosidl_runtime_c/u16string_functions.h', []).append(member.name)
     if isinstance(type_, NamespacedType):
-        include_prefix = idl_structure_type_to_c_include_prefix(type_)
+        include_prefix = idl_structure_type_to_c_include_prefix(type_, 'detail')
         includes.setdefault(include_prefix + '__struct.h', []).append(member.name)
         includes.setdefault(include_prefix + '__functions.h', []).append(member.name)
 }@
