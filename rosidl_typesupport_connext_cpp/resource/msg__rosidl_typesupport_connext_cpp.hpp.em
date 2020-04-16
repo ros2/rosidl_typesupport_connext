@@ -8,7 +8,7 @@ header_files = [
     'rosidl_runtime_c/message_type_support_struct.h',
     'rosidl_typesupport_interface/macros.h',
     package_name + '/msg/rosidl_typesupport_connext_cpp__visibility_control.h',
-    include_base + '/' + header_filename + '__struct.hpp'
+    include_base + '/detail/' + header_filename + '__struct.hpp'
 ]
 dds_specific_header_files = [
     include_base + '/dds_connext/' + interface_path.stem + '_Support.h',
