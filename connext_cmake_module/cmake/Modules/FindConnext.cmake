@@ -177,8 +177,11 @@ endfunction()
 _get_expected_library_names(_optimized_library_names "")
 _get_expected_library_names(_debug_library_names "d")
 
-file(TO_CMAKE_PATH "$ENV{NDDSHOME}" _NDDSHOME)
-
+if(DEFINED ENV{NDDSHOME})
+  file(TO_CMAKE_PATH "$ENV{NDDSHOME}" _NDDSHOME)
+else()
+  set(_NDDSHOME "")
+endif()
 if(NOT _NDDSHOME STREQUAL "")
   # look inside of NDDSHOME if defined
   message(STATUS "Found RTI Connext: ${_NDDSHOME}")
