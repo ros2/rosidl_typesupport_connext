@@ -88,14 +88,14 @@ ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
 bool
 take_request__@(service.namespaced_type.name)(
   void * untyped_replier,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * untyped_ros_request);
 
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
 bool
 take_response__@(service.namespaced_type.name)(
   void * untyped_requester,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * untyped_ros_response);
 
 ROSIDL_TYPESUPPORT_CONNEXT_CPP_PUBLIC_@(package_name)
