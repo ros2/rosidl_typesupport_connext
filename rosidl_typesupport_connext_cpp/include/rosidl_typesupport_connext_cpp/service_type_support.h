@@ -52,7 +52,8 @@ typedef struct service_type_support_callbacks_t
     void * replier, const rmw_request_id_t * request_header,
     const void * ros_response);
   // Function to read a ROS response from the wire
-  bool (* take_response)(void * requester, rmw_service_info_t * request_header, void * ros_response);
+  bool (* take_response)(
+    void * requester, rmw_service_info_t * request_header, void * ros_response);
   // Function to get the type erased dds request datawriter for the requester
   void *
   (*get_request_datawriter)(void * untyped_requester);
