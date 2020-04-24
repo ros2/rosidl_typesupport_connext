@@ -191,7 +191,7 @@ static const char * destroy_replier__@(service.namespaced_type.name)(
 
 static bool take_request__@(service.namespaced_type.name)(
   void * untyped_replier,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * untyped_ros_request)
 {
   using ReplierType = connext::Replier<
@@ -227,15 +227,17 @@ static bool take_request__@(service.namespaced_type.name)(
   }
 
   size_t SAMPLE_IDENTITY_SIZE = 16;
-  memcpy(&(request_header->writer_guid[0]), request.identity().writer_guid.value, SAMPLE_IDENTITY_SIZE);
+  memcpy(&(request_header->request_id.writer_guid[0]), request.identity().writer_guid.value, SAMPLE_IDENTITY_SIZE);
 
-  request_header->sequence_number = ((int64_t)request.identity().sequence_number.high) << 32 | request.identity().sequence_number.low;
+  request_header->request_id.sequence_number = ((int64_t)request.identity().sequence_number.high) << 32 | request.identity().sequence_number.low;
+  request_header->source_timestamp = 0;
+  request_header->received_timestamp = 0;
   return true;
 }
 
 static bool take_response__@(service.namespaced_type.name)(
   void * untyped_requester,
-  rmw_request_id_t * request_header,
+  rmw_service_info_t * request_header,
   void * untyped_ros_response)
 {
   using RequesterType = connext::Requester<
@@ -260,7 +262,9 @@ static bool take_response__@(service.namespaced_type.name)(
   int64_t sequence_number =
     (((int64_t)response.related_identity().sequence_number.high) << 32) |
     response.related_identity().sequence_number.low;
-  request_header->sequence_number = sequence_number;
+  request_header->request_id.sequence_number = sequence_number;
+  request_header->source_timestamp = 0;
+  request_header->received_timestamp = 0;
 
   const rosidl_message_type_support_t * ts =
     ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
