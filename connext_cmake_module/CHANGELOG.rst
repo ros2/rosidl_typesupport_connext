@@ -2,6 +2,14 @@
 Changelog for package connext_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.9.0 (2020-04-24)
+------------------
+* Fix CMake warning about using uninitialized variables (`#52 <https://github.com/ros2/rosidl_typesupport_connext/issues/52>`_)
+* Add missing project() command to check_abi CMakeLists.txt (`#48 <https://github.com/ros2/rosidl_typesupport_connext/issues/48>`_)
+* Set ddsgen and ddsgen_server paths to absolute paths for Windows (`#46 <https://github.com/ros2/rosidl_typesupport_connext/issues/46>`_)
+* Ignore -Wclass-memaccess build warnings coming from Connext 5.3.1 (`#45 <https://github.com/ros2/rosidl_typesupport_connext/issues/45>`_)
+* Contributors: Dirk Thomas, Jacob Perron, Stephen Brawner
+
 0.8.4 (2019-12-04)
 ------------------
 
