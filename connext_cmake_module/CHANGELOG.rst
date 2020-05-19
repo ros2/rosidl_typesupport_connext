@@ -2,8 +2,8 @@
 Changelog for package connext_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2020-05-19)
+------------------
 * Fix failure when find-packaging Connext Module and c/cxx languages are not enabled (`#55 <https://github.com/ros2/rosidl_typesupport_connext/issues/55>`_)
 * Contributors: Ivan Santiago Paunovic
 
