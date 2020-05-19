@@ -323,13 +323,22 @@ if(Connext_FOUND)
       "${CMAKE_CURRENT_BINARY_DIR}/connext_cmake_module/check_abi/CMakeLists.txt"
       @ONLY
     )
-    try_compile(
-      Connext_GLIBCXX_USE_CXX11_ABI_ZERO
-      "${CMAKE_CURRENT_BINARY_DIR}/connext_cmake_module/check_abi/build"
-      "${CMAKE_CURRENT_BINARY_DIR}/connext_cmake_module/check_abi"
-      check_abi exe)
-    if(Connext_GLIBCXX_USE_CXX11_ABI_ZERO)
-      message(STATUS "Connext was build with an old libc++ ABI and needs _GLIBCXX_USE_CXX11_ABI 0")
+    get_property(_enabled_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+    list(FIND _enabled_languages "CXX" _is_cxx_language_enabled)
+    if(NOT "${_is_cxx_language_enabled}" EQUAL "-1")
+      try_compile(
+        Connext_GLIBCXX_USE_CXX11_ABI_ZERO
+        "${CMAKE_CURRENT_BINARY_DIR}/connext_cmake_module/check_abi/build"
+        "${CMAKE_CURRENT_BINARY_DIR}/connext_cmake_module/check_abi"
+        check_abi exe)
+      if(Connext_GLIBCXX_USE_CXX11_ABI_ZERO)
+        message(STATUS "Connext was build with an old libc++ ABI and needs _GLIBCXX_USE_CXX11_ABI 0")
+      endif()
+    else()
+      message(STATUS
+        "CMake project does not have CXX support enabled, "
+        "skipping Connext_GLIBCXX_USE_CXX11_ABI_ZERO check"
+      )
     endif()
   endif()
 endif()
