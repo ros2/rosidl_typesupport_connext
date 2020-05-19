@@ -2,6 +2,9 @@
 Changelog for package rosidl_typesupport_connext_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.9.0 (2020-04-24)
 ------------------
 * Switch take_response and take_request to rmw_service_info_t (`#53 <https://github.com/ros2/rosidl_typesupport_connext/issues/53>`_)
