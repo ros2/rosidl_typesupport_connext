@@ -76,7 +76,7 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # Give cppcheck hints about macro definitions coming from outside this package
   get_target_property(
-    ament_cmake_cppcheck_ADDITIONAL_INCLUDE_DIRS rosidl_typesupport_interface::rosidl_typesupport_interface INTERFACE_INCLUDE_DIRECTORIES)
+    ament_cmake_cppcheck_ADDITIONAL_INCLUDE_DIRS rosidl::rosidl_typesupport_interface INTERFACE_INCLUDE_DIRECTORIES)
   ament_lint_auto_find_test_dependencies()
 endif()
 
