@@ -311,7 +311,10 @@ endif()
 
 if(Connext_FOUND)
   if(NOT WIN32)
-    list(APPEND Connext_LIBRARIES "pthread" "dl")
+    if(NOT ANDROID)
+      list(APPEND Connext_LIBRARIES "pthread")
+    endif()
+    list(APPEND Connext_LIBRARIES "dl")
   endif()
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
