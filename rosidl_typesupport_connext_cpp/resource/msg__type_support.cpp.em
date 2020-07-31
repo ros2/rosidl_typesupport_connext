@@ -294,24 +294,31 @@ to_cdr_stream__@(message.structure.namespaced_type.name)(
     fprintf(stderr, "failed to call @(__dds_msg_type_prefix)_Plugin_serialize_to_cdr_buffer()\n");
     return false;
   }
-  cdr_stream->buffer_length = expected_length;
-  if (cdr_stream->buffer_length > (std::numeric_limits<unsigned int>::max)()) {
-    fprintf(stderr, "cdr_stream->buffer_length, unexpectedly larger than max unsigned int\n");
+  if (expected_length > (std::numeric_limits<unsigned int>::max)()) {
+    fprintf(stderr, "expected_length, unexpectedly larger than max unsigned int\n");
     return false;
   }
-  if (cdr_stream->buffer_capacity < cdr_stream->buffer_length) {
+  if (cdr_stream->buffer_capacity < expected_length) {
+    uint8_t * new_buffer = static_cast<uint8_t *>(cdr_stream->allocator.allocate(expected_length, cdr_stream->allocator.state));
+    if (NULL == new_buffer) {
+      fprintf(stderr, "failed to allocate memory for cdr data\n");
+      return false;
+    }
     cdr_stream->allocator.deallocate(cdr_stream->buffer, cdr_stream->allocator.state);
-    cdr_stream->buffer = static_cast<uint8_t *>(cdr_stream->allocator.allocate(cdr_stream->buffer_length, cdr_stream->allocator.state));
+    cdr_stream->buffer = new_buffer;
+    cdr_stream->buffer_capacity = expected_length;
   }
   // call the function again and fill the buffer this time
-  unsigned int buffer_length_uint = static_cast<unsigned int>(cdr_stream->buffer_length);
+  unsigned int buffer_length_uint = static_cast<unsigned int>(expected_length);
   if (@(__dds_msg_type_prefix)_Plugin_serialize_to_cdr_buffer(
       reinterpret_cast<char *>(cdr_stream->buffer),
       &buffer_length_uint,
       dds_message) != RTI_TRUE)
   {
+    cdr_stream->buffer_length = 0;
     return false;
   }
+  cdr_stream->buffer_length = expected_length;
   if (@(__dds_msg_type_prefix)_TypeSupport::delete_data(dds_message) != DDS_RETCODE_OK) {
     return false;
   }
