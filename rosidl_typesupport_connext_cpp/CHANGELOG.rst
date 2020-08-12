@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2020-08-12)
+------------------
 * fix capacity of serialized messages (`#58 <https://github.com/ros2/rosidl_typesupport_connext/issues/58>`_)
 * Contributors: Dirk Thomas
 
