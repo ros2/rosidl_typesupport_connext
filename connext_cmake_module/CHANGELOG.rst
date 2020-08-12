@@ -2,6 +2,11 @@
 Changelog for package connext_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove pthread link flags for Android NDK cross-compiling (`#56 <https://github.com/ros2/rosidl_typesupport_connext/issues/56>`_)
+* Contributors: jayhou
+
 1.0.0 (2020-05-19)
 ------------------
 * Fix failure when find-packaging Connext Module and c/cxx languages are not enabled (`#55 <https://github.com/ros2/rosidl_typesupport_connext/issues/55>`_)
