@@ -148,6 +148,10 @@ void * create_requester__@(service.namespaced_type.name)(
   requester_params.datawriter_qos(*datawriter_qos);
 
   RequesterType * requester = static_cast<RequesterType *>(_allocator(sizeof(RequesterType)));
+  if (NULL == requester) {
+    fprintf(stderr, "failed to allocate memory for requester\n");
+    return NULL;
+  }
   try {
     new (requester) RequesterType(requester_params);
   } catch (...) {
@@ -252,6 +256,10 @@ void * create_replier__@(service.namespaced_type.name)(
   replier_params.datawriter_qos(*datawriter_qos);
 
   ReplierType * replier = static_cast<ReplierType *>(_allocator(sizeof(ReplierType)));
+  if (NULL == replier) {
+    fprintf(stderr, "failed to allocate memory for replier\n");
+    return NULL;
+  }
   try {
     new (replier) ReplierType(replier_params);
   } catch (...) {
