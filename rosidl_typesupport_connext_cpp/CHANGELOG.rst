@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2020-09-29)
+------------------
 * Check allocation of requester and replier (`#60 <https://github.com/ros2/rosidl_typesupport_connext/issues/60>`_)
 * Contributors: brawner
 
