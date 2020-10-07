@@ -4,8 +4,11 @@
   <name>rosidl_typesupport_connext_c</name>
   <version>1.0.2</version>
   <description>Generate the C interfaces for RTI Connext.</description>
-  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
+  <maintainer email="jacob@openrobotics.org">Jacob Perron</maintainer>
+  <maintainer email="michel@ekumenlabs.com">Michel Hidalgo</maintainer>
   <license>Apache License 2.0</license>
+
+  <author email="dthomas@openrobotics.org">Dirk Thomas</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>connext_cmake_module</buildtool_depend>
