@@ -2,6 +2,11 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.5 (2020-12-04)
+------------------
+* Check allocation of requester and replier (`#60 <https://github.com/ros2/rosidl_typesupport_connext/issues/60>`_) (`#62 <https://github.com/ros2/rosidl_typesupport_connext/issues/62>`_)
+* Contributors: brawner
+
 0.8.4 (2019-12-04)
 ------------------
 * try fallback to non-server mode if server mode failed (`#39 <https://github.com/ros2/rosidl_typesupport_connext/issues/39>`_)
