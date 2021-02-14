@@ -195,23 +195,33 @@ if(NOT _NDDSHOME STREQUAL "")
   _find_connext_libraries(_debug_libraries "${_debug_library_names}" "${_lib_path}")
 
   # check if all expected libraries have been found exactly once
-  _count_found_libraries(_optimized_libraries_count _found_all_optimized_libraries "${_optimized_library_names}" "${_optimized_libraries}")
-  _count_found_libraries(_debug_libraries_count _found_all_debug_libraries "${_debug_library_names}" "${_debug_libraries}")
+  _count_found_libraries(_optimized_libraries_count _found_all_optimized_libraries
+    "${_optimized_library_names}" "${_optimized_libraries}")
+  _count_found_libraries(_debug_libraries_count _found_all_debug_libraries
+    "${_debug_library_names}" "${_debug_libraries}")
 
   list(LENGTH _optimized_library_names _expected_length)
   if(_optimized_libraries_count GREATER _expected_length)
-    message(WARNING "NDDSHOME set to '${_NDDSHOME}' but found multiple files named '${_optimized_library_names}' under '${_lib_path}': ${_optimized_libraries}")
+    message(WARNING
+      "NDDSHOME set to '${_NDDSHOME}' but found multiple files named '${_optimized_library_names}' "
+      "under '${_lib_path}': ${_optimized_libraries}")
     set(_found_all_optimized_libraries FALSE)
   endif()
 
   list(LENGTH _debug_library_names _expected_length)
   if(_debug_libraries_count GREATER _expected_length)
-    message(WARNING "NDDSHOME set to '${_NDDSHOME}' but found multiple files named '${_debug_library_names}' under '${_lib_path}': ${_debug_libraries}")
+    message(WARNING
+      "NDDSHOME set to '${_NDDSHOME}' but found multiple files named '${_debug_library_names}' "
+      "under '${_lib_path}': ${_debug_libraries}")
     set(_found_all_debug_libraries FALSE)
   endif()
 
   if(NOT _found_all_optimized_libraries AND NOT _found_all_debug_libraries)
-    message(FATAL_ERROR "NDDSHOME set to '${_NDDSHOME}' but could neither find all optimized libraries '${_optimized_library_names}' nor all debug libraries '${_debug_library_names}' under '${_lib_path}':\n- optimized: ${_optimized_libraries}\n- debug: ${_debug_libraries}")
+    message(FATAL_ERROR
+      "NDDSHOME set to '${_NDDSHOME}' but could neither find all optimized libraries '${_optimized_library_names}' "
+      "nor all debug libraries '${_debug_library_names}' under '${_lib_path}':\n"
+      "- optimized: ${_optimized_libraries}\n"
+      "- debug: ${_debug_libraries}")
   endif()
 
   set(Connext_LIBRARIES "")
@@ -288,23 +298,29 @@ else()
     set(Connext_FOUND TRUE)
 
     # check if all expected libraries have been found exactly once
-    _count_found_libraries(_optimized_libraries_count _found_all_optimized_libraries "${_optimized_library_names}" "${Connext_LIBRARIES}")
-    _count_found_libraries(_debug_libraries_count _found_all_debug_libraries "${_debug_library_names}" "${Connext_LIBRARIES}")
+    _count_found_libraries(_optimized_libraries_count _found_all_optimized_libraries
+      "${_optimized_library_names}" "${Connext_LIBRARIES}")
+    _count_found_libraries(_debug_libraries_count _found_all_debug_libraries
+      "${_debug_library_names}" "${Connext_LIBRARIES}")
 
     list(LENGTH _optimized_library_names _expected_length)
     if(_optimized_libraries_count GREATER _expected_length)
-      message(WARNING "Found multiple files named '${_optimized_library_names}' in Connext_LIBRARIES: ${Connext_LIBRARIES}")
+      message(WARNING
+        "Found multiple files named '${_optimized_library_names}' in Connext_LIBRARIES: ${Connext_LIBRARIES}")
       set(_found_all_optimized_libraries FALSE)
     endif()
 
     list(LENGTH _debug_library_names _expected_length)
     if(_debug_libraries_count GREATER _expected_length)
-      message(WARNING "Found multiple files named '${_debug_library_names}' in Connext_LIBRARIES: ${Connext_LIBRARIES}")
+      message(WARNING
+        "Found multiple files named '${_debug_library_names}' in Connext_LIBRARIES: ${Connext_LIBRARIES}")
       set(_found_all_debug_libraries FALSE)
     endif()
 
     if(NOT _found_all_optimized_libraries AND NOT _found_all_debug_libraries)
-      message(FATAL_ERROR "Connext_LIBRARIES does neither contain all optimized libraries '${_optimized_library_names}' nor all debug libraries '${_debug_library_names}': ${Connext_LIBRARIES}")
+      message(FATAL_ERROR
+        "Connext_LIBRARIES does neither contain all optimized libraries '${_optimized_library_names}' "
+        "nor all debug libraries '${_debug_library_names}': ${Connext_LIBRARIES}")
     endif()
   endif()
 endif()
