@@ -27,6 +27,7 @@
 
   <build_export_depend>rmw</build_export_depend>
 
+  <exec_depend>rosidl_cli</exec_depend>
   <exec_depend>rosidl_parser</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
