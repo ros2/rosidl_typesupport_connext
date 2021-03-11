@@ -23,4 +23,3 @@ def generate_typesupport_connext_c(arguments_file):
         'dds_connext/%s__type_support_c.cpp'
     }
     return generate_files(arguments_file, mapping)
-
