@@ -20,8 +20,8 @@ from ament_index_python import get_package_share_directory
 
 from rosidl_cli.command.generate.extensions import GenerateCommandExtension
 from rosidl_cli.command.helpers import generate_visibility_control_file
-from rosidl_cli.command.helpers import legacy_generator_arguments_file
 from rosidl_cli.command.helpers import idl_tuples_from_interface_files
+from rosidl_cli.command.helpers import legacy_generator_arguments_file
 from rosidl_cli.command.translate.api import translate
 
 from rosidl_typesupport_connext_cpp import generate_cpp
