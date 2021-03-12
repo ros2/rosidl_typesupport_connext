@@ -19,6 +19,76 @@ import sys
 from rosidl_cmake import generate_files
 
 
+def generate_dds_connext_cpp_file(
+    package_name, idl_file, include_dirs, output_path, idl_pp
+):
+    cmd = [idl_pp]
+    for include_dir in include_dirs:
+        cmd += ['-I', include_dir]
+    cmd += [
+        '-d', output_path,
+        '-language', 'C++',
+        '-namespace',
+        '-update', 'typefiles',
+        '-unboundedSupport',
+        idl_file
+    ]
+    if os.name == 'nt':
+        cmd[-5:-5] = ['-dllExportMacroSuffix', package_name]
+
+    msg_name = os.path.splitext(os.path.basename(idl_file))[0]
+    count = 1
+    max_count = 5
+    while True:
+        try:
+            subprocess.check_call(cmd)
+        except subprocess.CalledProcessError as e:
+            # HACK(dirk-thomas) it seems that the RTI code generator
+            # sometimes fails when running in highly conconcurrent
+            # environments using the server mode
+            # therefore we will retry in non-server mode
+            print("'%s' failed for '%s/%s' with rc %d" %
+                  (idl_pp, package_name, msg_name, e.returncode),
+                  file=sys.stderr)
+            dirname, basename = os.path.split(cmd[0])
+            root, ext = os.path.splitext(basename)
+            server_suffix = '_server'
+            if not root.endswith(server_suffix):
+                raise
+            print('Running non-server code generator instead...',
+                  file=sys.stderr)
+            cmd[0] = os.path.join(dirname, root[:-len(server_suffix)] + ext)
+            subprocess.check_call(cmd)
+
+        # fail safe if the generator does not work as expected
+        any_missing = False
+        generated_files = []
+        for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
+            filename = os.path.join(output_path, msg_name + suffix)
+            if not os.path.exists(filename):
+                any_missing = True
+                break
+            generated_files.append(filename)
+        if not any_missing:
+            break
+        print("'%s' failed to generate the expected files for '%s/%s'" %
+              (idl_pp, package_name, msg_name), file=sys.stderr)
+        if count < max_count:
+            count += 1
+            print('Running code generator again (retry %d of %d)...' %
+                  (count, max_count), file=sys.stderr)
+            continue
+        raise RuntimeError('failed to generate the expected files')
+
+    if os.name != 'nt':
+        # modify generated code to avoid unsed global variable warning
+        # which can't be suppressed non-globally with gcc
+        msg_filename = os.path.join(output_path, msg_name + '.h')
+        _modify(msg_filename, package_name, msg_name, _inject_unused_attribute)
+
+    return generated_files
+
+
 def generate_dds_connext_cpp(
         pkg_name, dds_interface_files, dds_interface_base_path, deps,
         output_basepath, idl_pp):
@@ -49,67 +119,8 @@ def generate_dds_connext_cpp(
         except FileExistsError:
             pass
 
-        cmd = [idl_pp]
-        for include_dir in include_dirs:
-            cmd += ['-I', include_dir]
-        cmd += [
-            '-d', output_path,
-            '-language', 'C++',
-            '-namespace',
-            '-update', 'typefiles',
-            '-unboundedSupport',
-            idl_file
-        ]
-        if os.name == 'nt':
-            cmd[-5:-5] = ['-dllExportMacroSuffix', pkg_name]
-
-        msg_name = os.path.splitext(os.path.basename(idl_file))[0]
-        count = 1
-        max_count = 5
-        while True:
-            try:
-                subprocess.check_call(cmd)
-            except subprocess.CalledProcessError as e:
-                # HACK(dirk-thomas) it seems that the RTI code generator
-                # sometimes fails when running in highly conconcurrent
-                # environments using the server mode
-                # therefore we will retry in non-server mode
-                print("'%s' failed for '%s/%s' with rc %d" %
-                      (idl_pp, pkg_name, msg_name, e.returncode),
-                      file=sys.stderr)
-                dirname, basename = os.path.split(cmd[0])
-                root, ext = os.path.splitext(basename)
-                server_suffix = '_server'
-                if not root.endswith(server_suffix):
-                    raise
-                print('Running non-server code generator instead...',
-                      file=sys.stderr)
-                cmd[0] = os.path.join(dirname, root[:-len(server_suffix)] + ext)
-                subprocess.check_call(cmd)
-
-            # fail safe if the generator does not work as expected
-            any_missing = False
-            for suffix in ['.h', '.cxx', 'Plugin.h', 'Plugin.cxx', 'Support.h', 'Support.cxx']:
-                filename = os.path.join(output_path, msg_name + suffix)
-                if not os.path.exists(filename):
-                    any_missing = True
-                    break
-            if not any_missing:
-                break
-            print("'%s' failed to generate the expected files for '%s/%s'" %
-                  (idl_pp, pkg_name, msg_name), file=sys.stderr)
-            if count < max_count:
-                count += 1
-                print('Running code generator again (retry %d of %d)...' %
-                      (count, max_count), file=sys.stderr)
-                continue
-            raise RuntimeError('failed to generate the expected files')
-
-        if os.name != 'nt':
-            # modify generated code to avoid unsed global variable warning
-            # which can't be suppressed non-globally with gcc
-            msg_filename = os.path.join(output_path, msg_name + '.h')
-            _modify(msg_filename, pkg_name, msg_name, _inject_unused_attribute)
+        generate_dds_connext_cpp_file(
+            pkg_name, idl_file, include_dirs, output_path, idl_pp)
 
     return 0
 
@@ -141,5 +152,4 @@ def generate_cpp(arguments_file):
         'idl__dds_connext__type_support.cpp.em':
         'dds_connext/%s__type_support.cpp'
     }
-    generate_files(arguments_file, mapping)
-    return 0
+    return generate_files(arguments_file, mapping)

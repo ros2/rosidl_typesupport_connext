@@ -28,9 +28,8 @@ def main(argv=sys.argv[1:]):
 
     generator_args = read_generator_arguments(args.generator_arguments_file)
 
-    rc = generate_cpp(args.generator_arguments_file)
-    if rc:
-        return rc
+    generate_cpp(args.generator_arguments_file)
+
     return generate_dds_connext_cpp(
         generator_args['package_name'],
         generator_args.get('additional_files', []),
