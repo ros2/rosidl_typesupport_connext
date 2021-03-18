@@ -2,6 +2,12 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Expose Connext C++ typesupport generation via rosidl generate CLI (`#68 <https://github.com/ros2/rosidl_typesupport_connext/issues/68>`_)
+* Update maintainers (`#64 <https://github.com/ros2/rosidl_typesupport_connext/issues/64>`_)
+* Contributors: Jacob Perron, Michel Hidalgo
+
 1.0.2 (2020-09-29)
 ------------------
 * Check allocation of requester and replier (`#60 <https://github.com/ros2/rosidl_typesupport_connext/issues/60>`_)

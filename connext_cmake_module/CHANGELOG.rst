@@ -2,6 +2,12 @@
 Changelog for package connext_cmake_module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Shorten some excessively long lines of CMake (`#66 <https://github.com/ros2/rosidl_typesupport_connext/issues/66>`_)
+* Update maintainers (`#64 <https://github.com/ros2/rosidl_typesupport_connext/issues/64>`_)
+* Contributors: Jacob Perron, Scott K Logan
+
 1.0.2 (2020-09-29)
 ------------------
 
