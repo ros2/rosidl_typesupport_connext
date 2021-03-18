@@ -2,8 +2,8 @@
 Changelog for package rosidl_typesupport_connext_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2021-03-18)
+------------------
 * Expose Connext C++ typesupport generation via rosidl generate CLI (`#68 <https://github.com/ros2/rosidl_typesupport_connext/issues/68>`_)
 * Update maintainers (`#64 <https://github.com/ros2/rosidl_typesupport_connext/issues/64>`_)
 * Contributors: Jacob Perron, Michel Hidalgo
